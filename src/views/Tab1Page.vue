@@ -1,0 +1,187 @@
+<template>
+  <ion-page>
+
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Anasayfa</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true">
+
+      
+        <ion-toolbar>
+          <ion-title class="title">Son Kampanyalar</ion-title>
+          <hr class="line">
+        </ion-toolbar>
+      
+      <div class="container">
+        <img src="https://www.bonus.com.tr/assets/img/main_slider/qrb_300924.jpg" alt="bonus">
+        <p>Mobil temazsız veya QR ile ödemelerinize 300TL'ye varan bonus!</p>
+        <hr class="inline">
+        <div class="under-container">
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline"/>  01.01.2024</p>
+            <p><ion-icon aria-hidden="true" :icon="hourglassOutline"/>  12.12.2024</p>
+          </div>
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="cardOutline"/>  Bonus</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline"/>  Genel</p>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBJKXghhZtAlmcQ3p62QL23zCvrt7sXLcPA&s" alt="axess">
+        <p>Axess ile OPET'te 4 kez 800TL'ye 250TL'ye varan Chip-Para! </p>
+        <div class="under-container">
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline"/>  02.02.2024</p>
+            <p><ion-icon aria-hidden="true" :icon="hourglassOutline"/>  11.11.2024</p>
+          </div>
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="cardOutline"/>  Axess</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline"/>   Opet</p>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <img src="https://hayatpay.com.tr/_next/image?url=http%3A%2F%2Fhp-fs%3A9000%2Fhp-images%2Fespressolab_olculu_%25C3%2587al%25C4%25B1%25C5%259Fma%2520Y%25C3%25BCzeyi%25201%2520kopya%25205%2520copy%25204.jpg&w=3840&q=75" alt="hayat">
+        <p>Hayat Pay ile Espressolab'den bedava kahve almak için hemen Hayat Pay uygulamasını indir, kahve kodunu kap!</p>
+        <div class="under-container">
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline"/>  18.09.2024</p>
+            <p><ion-icon aria-hidden="true" :icon="hourglassOutline"/>  31.10.2024</p>
+          </div>
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="cardOutline"/>  Tümü</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline"/>  Espressolab</p>
+          </div>
+        </div>
+      </div>
+
+      
+        <ion-toolbar>
+          <ion-title class="title">En Beğenilenler</ion-title>
+          <hr class="line">
+        </ion-toolbar>
+      
+
+      <div class="container">
+        <img src="https://fintechtime.com/wp-content/uploads/2018/11/Vakifbank-yeni-kart-2018.jpg" alt="visa">
+        <p>Visa Private Kredi Kartı ile Hediye Kahve Kazan!</p>
+        <div class="under-container">
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline"/>  01.10.2024</p>
+            <p><ion-icon aria-hidden="true" :icon="hourglassOutline"/>  31.10.2024</p>
+          </div>
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="cardOutline"/>  Vakıfbank</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline"/>  Espressolab</p>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <img src="https://www.bonus.com.tr/assets/img/main_slider/qrb_300924.jpg" alt="bonus">
+        <p>Mobil temazsız veya QR ile ödemelerinize 300TL'ye varan bonus!</p>
+        <div class="under-container">
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline"/>  01.01.2024</p>
+            <p><ion-icon aria-hidden="true" :icon="hourglassOutline"/>  12.12.2024</p>
+          </div>
+          <div class="inner-info">
+            <p><ion-icon aria-hidden="true" :icon="cardOutline"/>  Bonus</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline"/>   Genel</p>
+          </div>
+        </div>
+      </div>
+      
+    </ion-content>
+
+  </ion-page>
+</template>
+
+<script setup lang="ts">
+import { IonPage, IonHeader, IonFab, IonFabButton, IonToolbar, IonTitle, IonContent, IonIcon, IonGrid, IonRow, IonCol, IonImg, } from '@ionic/vue';
+import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline } from 'ionicons/icons';
+</script>
+
+<style>
+.title {
+  padding: 20px 16px 5px 16px;
+  text-align: left;
+  color: red;
+}
+
+.line {
+  background-color: rgb(255, 0, 0);
+  margin-left: 16px;
+  margin-right: 16px;
+  height: 2px;
+}
+
+.inline {
+  background-color: gray;
+  margin-left: 16px;
+  margin-right: 16px;
+  height: 2px;
+}
+
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+  border-radius: 10px;
+  border-style: groove;
+  border-color: black;
+  border-width: 2px;
+  /*background-color: aqua;*/
+}
+
+.container img {
+  width: 100%;
+  height: auto;
+  /*border-radius: 10px;*/
+}
+
+.container p {
+  font-size: 16px;
+  line-height: 22px;
+  color: black;
+  /*background-color: blueviolet;*/
+  margin: 0 10px;
+  width: 100%;
+  padding: 10px 16px;
+  font-weight: bold;
+}
+
+.under-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.inner-info {
+  /*background-color: rgb(255, 99, 203);*/
+  width: 100%;
+}
+
+.inner-info p {
+  /*background-color: yellow;*/
+  width: max-content;
+  color: black;
+  font-weight: normal;
+  padding: 0%;
+  margin-top: 5px;
+}
+
+ion-icon {
+  --ionicon-stroke-width: 40px;
+}
+
+</style>
