@@ -23,18 +23,15 @@
       </div>
 
       <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px;">
-        <ion-card style="width: 30%; background-color: transparent;">
+        <ion-card 
+          v-for="(card, index) in savedCards" 
+          :key="index" 
+          class="transparent-card"
+        >
           <ion-card-content>
-            <img src="/Users/eren/Desktop/a.png" alt="Açıklayıcı fotoğraf" style="width: 100%; height: auto;" />
+            <img :src="card.image" :alt="card.name" style="width: 100%; height: auto;" />
           </ion-card-content>
-          <ion-button fill="clear">Axess</ion-button>
-        </ion-card>
-
-        <ion-card style="width: 30%; background-color: transparent;">
-          <ion-card-content>
-            <img src="/Users/eren/Desktop/bonus.png" alt="Açıklayıcı fotoğraf" style="width: 100%; height: auto;" />
-          </ion-card-content>
-          <ion-button fill="clear">Bonus</ion-button>
+          <ion-button fill="clear">{{ card.name }}</ion-button>
         </ion-card>
       </div>
 
@@ -43,33 +40,47 @@
       </div>
 
       <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px;">
-        <ion-card style="width: 30%; background-color: transparent;">
+        <ion-card 
+          v-for="(card, index) in otherCards" 
+          :key="index" 
+          class="transparent-card"
+        >
           <ion-card-content>
-            <img src="/Users/eren/Desktop/maximum_card_logo.png" alt="Açıklayıcı fotoğraf" style="width: 100%; height: auto;" />
+            <img :src="card.image" :alt="card.name" style="width: 100%; height: auto;" />
           </ion-card-content>
-          <ion-button fill="clear">Maximum</ion-button>
-        </ion-card>
-
-        <ion-card style="width: 30%; background-color: transparent;">
-          <ion-card-content>
-            <img src="/Users/eren/Desktop/world_card_logo.png" alt="Açıklayıcı fotoğraf" style="width: 100%; height: auto;" />
-          </ion-card-content>
-          <ion-button fill="clear">World</ion-button>
-        </ion-card>
-
-        <ion-card style="width: 30%; background-color: transparent;">
-          <ion-card-content>
-            <img src="/Users/eren/Desktop/icon.webp" alt="Açıklayıcı fotoğraf" style="width: 100%; height: auto;" />
-          </ion-card-content>
-          <ion-button fill="clear">Hopi</ion-button>
+          <ion-button fill="clear">{{ card.name }}</ion-button>
         </ion-card>
       </div>
-      
+
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
+
+// Kayıtlı ve diğer kartlar için verileri tanımlıyoruz
+const savedCards = [
+  { name: 'Axess', image: '/Users/eren/Desktop/a.png' },
+  { name: 'Bonus', image: '/Users/eren/Desktop/bonus.png' }
+];
+
+const otherCards = [
+  { name: 'Maximum', image: '/Users/eren/Desktop/maximum_card_logo.png' },
+  { name: 'World', image: '/Users/eren/Desktop/world_card_logo.png' },
+  { name: 'Hopi', image: '/Users/eren/Desktop/icon.webp' }
+];
 </script>
+
+<style scoped>
+.transparent-card {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  --ion-background-color: transparent !important; /* Ionic'in varsayılan arka plan rengini de iptal ediyoruz */
+}
+
+.ion-card-content {
+  padding: 0 !important; /* Varsayılan boşlukları kaldırıyoruz */
+}
+</style>
