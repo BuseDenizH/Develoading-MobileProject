@@ -28,10 +28,9 @@
   </ion-page>
 </template>
 
-
-
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router'; 
 import {  IonContent, IonCol, IonGrid, IonPage, IonRow,IonSearchbar, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon} from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 
@@ -69,9 +68,13 @@ const filteredItems = computed(() => {
 const handleClick = (imageId: number) => {
   console.log(`Resim ${imageId} tıklandı!`);
 };
+
+
+const router = useRouter();
+const goBack = () => {
+  router.back();  
+};
 </script>
-
-
 
 <style scoped>
 .back-button {
