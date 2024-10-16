@@ -45,6 +45,8 @@ import { arrowBackOutline } from 'ionicons/icons';
 // Router kullanımı
 const router = useRouter();
 
+
+
 // Reactive variables for email and password
 const email = ref('admin@admin.com');
 const password = ref('admin');
@@ -69,6 +71,7 @@ const onForgotPassword = () => {
 // Navigation method (this would require an actual implementation)
 const goBack = () => {
   console.log('Geri git');
+  router.back();
 };
 </script>
 
