@@ -50,23 +50,17 @@
   </ion-content>
 </template>
 
-<script>
+<script setup lang="ts">
 import icon from '@/assets/icon.png';
+import { useRouter } from 'vue-router';
 
-export default {
-  name: "SignUpForm",
-  data() {
-    return {
-      logo: icon
-    };
-  },
-  methods: {
-    register() {
-      // Kayıt işlemi tamamlandığında
-      localStorage.setItem('userRegistered', 'true');
-      this.$router.push({ name: 'Login' });
-    }
-  }
+const logo = icon;
+
+const register = () => {
+  // Kayıt işlemi tamamlandığında
+  localStorage.setItem('userRegistered', 'true');
+  const router = useRouter();
+  router.push({ name: 'Login' });
 };
 </script>
 
