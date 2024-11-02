@@ -53,13 +53,13 @@
 <script setup lang="ts">
 import icon from '@/assets/icon.png';
 import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const logo = icon;
 
 const register = () => {
   // Kayıt işlemi tamamlandığında
   localStorage.setItem('userRegistered', 'true');
-  const router = useRouter();
   router.push({ name: 'Login' });
 };
 </script>
