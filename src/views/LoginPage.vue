@@ -3,8 +3,8 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button @click="goBack" class="back-button">
-            <ion-icon aria-hidden="true" :icon="arrowBackOutline" />
+          <ion-button router-link="/" class="back-button">
+            <ion-icon :icon="arrowBackOutline" />
             <ion-label>Geri</ion-label>
           </ion-button>
         </ion-buttons>

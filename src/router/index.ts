@@ -9,6 +9,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'SignUp',
     component: SignUpForm,
+    /*
     beforeEnter: (to, from, next) => {
       const isRegistered = localStorage.getItem('userRegistered');
       if (isRegistered) {
@@ -16,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
       } else {
         next();
       }
-    }
+    }*/
   },
   {
     path: '/login',
