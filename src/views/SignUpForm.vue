@@ -1,77 +1,122 @@
 <template>
-  <ion-content>
-    <div class="signup-container">
-      <!-- üst simge -->
-      <img :src="logo" alt="logo" class="logo" />
+  <ion-page>
+    <ion-content>
+      <ion-grid class="signup-container">
+        <!-- Logo -->
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto">
+            <ion-img :src="logo" alt="logo" class="logo" />
+          </ion-col>
+        </ion-row>
 
-      <!-- şirket adı -->
-      <p class="company-name">Company Name</p>
+        <!-- Company Name -->
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto">
+            <ion-text color="medium" class="company-name">Company Name</ion-text>
+          </ion-col>
+        </ion-row>
 
-      <!-- üye ol başlık açıklama -->
-      <h1>Üye Ol</h1>
-      <p class="welcome-text">Merhaba! Kampanya uygulamasına hoşgeldiniz.</p>
+        <!-- Sign Up Heading -->
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto">
+            <ion-text color="dark" class="signup-title">Üye Ol</ion-text>
+          </ion-col>
+        </ion-row>
 
-      <!-- email alanı -->
-      <ion-item>
-        <ion-label position="stacked" color="danger">Email</ion-label>
-        <ion-input placeholder="Mail adresinizi giriniz" type="email"></ion-input>
-      </ion-item>
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto">
+            <ion-text color="medium" class="welcome-text">Merhaba! Kampanya uygulamasına hoşgeldiniz.</ion-text>
+          </ion-col>
+        </ion-row>
+        
+        <form @submit.prevent="register">
+          <!-- Email Field -->
+          <ion-item>
+            <ion-label position="stacked" color="danger">Email</ion-label>
+            <ion-input type="email" placeholder="Mail adresinizi giriniz" v-model="email" required></ion-input>
+          </ion-item>
 
-      <!-- şifre alanı -->
-      <ion-item>
-        <ion-label position="stacked" color="danger">Şifre</ion-label>
-        <ion-input placeholder="Şifrenizi giriniz" type="password"></ion-input>
-      </ion-item>
+          <!-- Password Field -->
+          <ion-item>
+            <ion-label position="stacked" color="danger">Şifre</ion-label>
+            <ion-input type="password" placeholder="Şifrenizi giriniz" v-model="password" required></ion-input>
+          </ion-item>
 
-      <!-- gizlilik ve kullanım şartları -->
-      <ion-item lines="none">
-        <ion-checkbox slot="start"></ion-checkbox>
-        <label>I agree to the <span class="terms">Terms of Services</span> and <span class="privacy">Privacy
-            Policy</span>.</label>
-      </ion-item>
+          <!-- Confirm Password Field -->
+          <ion-item>
+            <ion-label position="stacked" color="danger">Şifreyi Tekrar Girin</ion-label>
+            <ion-input type="password" placeholder="Şifrenizi tekrar giriniz" v-model="confirmPassword" required></ion-input>
+          </ion-item>
 
-      <!-- üye ol butonu -->
-      <ion-button expand="block" color="danger" @click="register">Üye Ol</ion-button>
+          <!-- Terms and Privacy Agreement -->
+          <ion-item lines="none">
+            <ion-checkbox slot="start" v-model="agreeTerms"></ion-checkbox>
+            <ion-label>I agree to the <span class="terms">Terms of Services</span> and <span class="privacy">Privacy Policy</span>.</ion-label>
+          </ion-item>
 
-      <!-- diğer kayıt seçenekleri -->
-      <p class="or">ya da alttaki uygulamalardan biriyle üye ol</p>
+          <!-- Sign Up Button -->
+          <ion-button expand="block" color="danger" :disabled="!agreeTerms" type="submit">Üye Ol</ion-button>
+        </form>
 
-      <!-- sosyal medya Butonları -->
-      <div class="social-buttons">
-        <ion-button color="primary">Facebook</ion-button>
-        <ion-button color="dark">X</ion-button>
-      </div>
+        <!-- Other Sign-Up Options -->
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto">
+            <ion-text color="medium" class="or-text">ya da alttaki uygulamalardan biriyle üye ol</ion-text>
+          </ion-col>
+        </ion-row>
 
-      <!-- Zaten Üye misin -->
-      <p class="already-member">Zaten üye misin?
-        <router-link to="/login">Giriş Yap</router-link>
-      </p>
-    </div>
-  </ion-content>
+        <!-- Social Media Buttons -->
+        <ion-row class="social-buttons ion-justify-content-center">
+          <ion-button color="primary">Facebook</ion-button>
+          <ion-button color="dark">X</ion-button>
+        </ion-row>
+
+        <!-- Already a Member -->
+        <ion-row class="ion-justify-content-center">
+          <ion-col size="auto">
+            <ion-text color="dark">
+              Zaten üye misin?
+              <router-link to="/login">Giriş Yap</router-link>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
-import icon from '@/assets/icon.png';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
-const router = useRouter();
+import icon from '@/assets/icon.png';
+import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton, IonGrid, IonRow, IonCol, IonImg, IonText, IonCheckbox } from '@ionic/vue';
 
+const router = useRouter();
 const logo = icon;
+const email = ref('');
+const password = ref('');
+const confirmPassword = ref(''); // Şifreyi tekrar girmek için yeni bir değişken
+const agreeTerms = ref(false);
 
 const register = () => {
-  // Kayıt işlemi tamamlandığında
-  localStorage.setItem('userRegistered', 'true');
-  router.push({ name: 'Login' });
+  // Şifrelerin eşleşip eşleşmediğini kontrol et
+  if (password.value !== confirmPassword.value) {
+    alert('Şifreler eşleşmiyor. Lütfen kontrol edin.');
+    return;
+  }
+
+  if (agreeTerms.value) {
+    localStorage.setItem('userRegistered', 'true');
+    router.push({ name: 'Login' });
+  } else {
+    alert('Lütfen gizlilik politikası ve kullanım şartlarını kabul ediniz.');
+  }
 };
 </script>
 
 <style scoped>
 .signup-container {
-  text-align: center;
   padding: 20px;
-  max-width: 100%;
-  box-sizing: border-box;
-  margin: 0 auto;
 }
 
 .logo {
@@ -79,53 +124,19 @@ const register = () => {
   margin-bottom: 10px;
 }
 
-.company-name {
-  font-size: 16px;
-  color: gray;
-  margin-bottom: 10px;
+.company-name, .signup-title, .welcome-text, .or-text {
+  text-align: center;
 }
 
-h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.welcome-text {
-  font-size: 14px;
-  color: gray;
-  margin-bottom: 20px;
-}
-
-ion-item {
-  margin-bottom: 10px;
-}
-
-.terms,
-.privacy {
+.terms, .privacy {
   color: red;
 }
 
-ion-button {
-  margin-top: 20px;
-}
-
-.or {
-  margin: 20px 0;
-  font-size: 12px;
-  color: gray;
-}
-
 .social-buttons {
-  display: flex;
-  justify-content: center;
-}
-
-.social-buttons ion-button {
-  margin: 0 5px;
-}
-
-.already-member {
   margin-top: 10px;
-  font-size: 12px;
+}
+
+.back-button {
+  color: blue;
 }
 </style>
