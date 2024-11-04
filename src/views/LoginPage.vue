@@ -71,7 +71,8 @@ const onForgotPassword = () => {
 // Navigation method (this would require an actual implementation)
 const goBack = () => {
   console.log('Geri git');
-  router.back();
+  localStorage.removeItem('userRegistered')
+  router.push({ name: 'SignUp' });
 };
 </script>
 
