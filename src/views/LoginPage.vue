@@ -41,7 +41,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router'; // vue-router import edildi
 import { arrowBackOutline } from 'ionicons/icons';
-import {IonPage, IonHeader,IonToolbar,IonContent,IonIcon}from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
 // Router kullanımı
 const router = useRouter();
 
