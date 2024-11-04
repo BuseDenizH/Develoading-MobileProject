@@ -53,6 +53,7 @@
 <script setup lang="ts">
 import icon from '@/assets/icon.png';
 import { useRouter } from 'vue-router';
+import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
 const router = useRouter();
 
 const logo = icon;

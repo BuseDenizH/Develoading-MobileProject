@@ -30,7 +30,7 @@
         </form>
 
         <div class="forgot-password">
-          <a href="#" @click.prevent="onForgotPassword">Şifremi Unuttum</a>
+          <a @click.prevent="onForgotPassword">Şifremi Unuttum</a>
         </div>
       </div>
     </ion-content>
@@ -71,7 +71,6 @@ const onForgotPassword = () => {
 // Navigation method (this would require an actual implementation)
 const goBack = () => {
   console.log('Geri git');
-  localStorage.removeItem('userRegistered')
   router.push({ name: 'SignUp' });
 };
 </script>
