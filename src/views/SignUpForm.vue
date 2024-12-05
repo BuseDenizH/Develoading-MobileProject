@@ -33,7 +33,7 @@
           <!-- Email Field -->
           <ion-item>
             <ion-label position="stacked" color="danger">Email</ion-label>
-            <ion-input type="email" placeholder="Mail adresinizi giriniz" v-model="email" required></ion-input>
+            <ion-input type="email" placeholder="Mail adresinizi giriniz" v-model="mail" required></ion-input>
           </ion-item>
 
           <!-- Password Field -->
@@ -93,25 +93,51 @@ import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel,
 
 const router = useRouter();
 const logo = icon;
-const email = ref('');
+const mail = ref('');
 const password = ref('');
 const confirmPassword = ref(''); // Şifreyi tekrar girmek için yeni bir değişken
 const agreeTerms = ref(false);
 
-const register = () => {
-  // Şifrelerin eşleşip eşleşmediğini kontrol et
+const register = async () => {
   if (password.value !== confirmPassword.value) {
     alert('Şifreler eşleşmiyor. Lütfen kontrol edin.');
     return;
   }
 
   if (agreeTerms.value) {
-    localStorage.setItem('userRegistered', 'true');
-    router.push({ name: 'Login' });
+    try {
+      debugger
+      const response = await fetch('http://localhost:8082/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mail: mail.value,
+        password: password.value,
+           }),
+      });
+ debugger
+      if (response.ok) {
+        alert('Kayıt başarılı!');
+        router.push({ name: 'Login' });
+      } else {
+        alert('Kayıt sırasında bir hata oluştu.');
+         const errorMessage = await response.text();
+  console.error(`Error: ${response.status} - ${errorMessage}`);
+  alert(`Kayıt sırasında bir hata oluştu. Hata: ${response.status}`);
+  return;
+      }
+    } catch (error) {
+      console.error('Kayıt başarısız:', error);
+      debugger
+      alert('Bir hata meydana geldi.');
+    }
   } else {
     alert('Lütfen gizlilik politikası ve kullanım şartlarını kabul ediniz.');
   }
 };
+
 </script>
 
 <style scoped>

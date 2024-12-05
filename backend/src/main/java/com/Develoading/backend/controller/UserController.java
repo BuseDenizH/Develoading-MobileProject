@@ -16,6 +16,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
+    @CrossOrigin(origins = "")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         if (userService.getUserByMail(user.getMail()) != null) {
             return ResponseEntity.badRequest().body(null); // E-posta zaten kayıtlıysa
