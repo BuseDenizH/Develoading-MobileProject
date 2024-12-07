@@ -25,7 +25,16 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
-
+    @PostMapping("/login")
+    @CrossOrigin(origins = "")
+    public ResponseEntity<User> loginUser(@RequestBody User loginRequest) {
+        try {
+            User user = userService.loginUser(loginRequest.getMail(), loginRequest.getPassword());
+            return ResponseEntity.ok(user);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     // Tüm kullanıcıları listeleme
     @GetMapping

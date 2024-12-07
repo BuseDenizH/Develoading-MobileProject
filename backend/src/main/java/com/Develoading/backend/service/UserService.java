@@ -37,4 +37,12 @@ public class UserService {
             userRepository.delete(user);
         }
     }
+
+    public User loginUser(String mail, String password) {
+        User user = userRepository.findByMailAndPassword(mail, password);
+        if (user == null) {
+            throw new IllegalArgumentException("Geçersiz e-posta veya şifre.");
+        }
+        return user;
+    }
 }
