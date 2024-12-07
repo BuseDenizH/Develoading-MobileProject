@@ -51,17 +51,36 @@ const router = useRouter();
 const email = ref('admin@admin.com');
 const password = ref('admin');
 
-// Login method
-const onLogin = () => {
-  if (email.value === 'admin@admin.com' && password.value === 'admin') {
-    // Giriş bilgileri doğruysa yönlendir
-    router.push('/tabs/tab1');
-  } else {
-    // Yanlış giriş bilgisi
-    console.log('Hatalı email veya şifre');
-    alert('Yanlış email veya şifre girdiniz');
+const onLogin = async () => {
+  try {
+    const response = await fetch('http://localhost:8082/api/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        mail: email.value,
+        password: password.value,
+      }),
+    });
+
+    if (response.ok) {
+      const user = await response.json();
+      console.log('Login successful:', user);
+
+      // Kullanıcı bilgisi alındı, yönlendir
+      alert(`Hoş geldiniz, ${user.name}`);
+      router.push('/tabs/tab1'); // Başarılı giriş sonrası yönlendirme
+    } else {
+      // Hatalı giriş bilgileri
+      alert('Email veya şifre hatalı!');
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
   }
 };
+
 
 // Forgot password method
 const onForgotPassword = () => {
