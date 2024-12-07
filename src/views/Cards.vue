@@ -108,12 +108,12 @@ const filteredOtherCards = computed(() => {
 .title {
   padding: 20px 16px 5px 16px;
   text-align: left;
-  color: red;
+  color: rgb(248, 79, 0);
   font-size: 20px;
 }
 
 .line {
-  background-color: rgb(255, 0, 0);
+  background-color: rgb(248, 79, 0);
   height: 2px;
   margin: 0;
 }

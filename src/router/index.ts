@@ -47,6 +47,12 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'tab4',
         component: () => import('@/views/Profile.vue')
+      },
+      {
+        path: 'tab5/:type/:id',
+        name: 'DetailsPopPage',
+        component: () => import('@/views/DetailsPopPage.vue'),
+        props: true
       }
     ]
   }
