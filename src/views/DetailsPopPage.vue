@@ -63,7 +63,8 @@ const itemsSonKampanyalar = [
     },
     info: {
       type: "Bonus",
-      category: "Genel"
+      category: "Giyim/Kozmetik",
+      name: "Bonus Kampanyası"
     }
   },
   {
@@ -76,7 +77,8 @@ const itemsSonKampanyalar = [
     },
     info: {
       type: "Axess",
-      category: "Opet"
+      category: "Akaryakıt",
+      name: "Axess Akaryakıt Kampanyası"
     }
   },
   {
@@ -89,10 +91,11 @@ const itemsSonKampanyalar = [
     },
     info: {
       type: "Tümü",
-      category: "Espressolab"
+      category: "Yeme/İçme",
+      name: "Hayat Pay Kahve Kampanyası"
     }
   }
-];
+]
 
 const itemsEnBegenilenler = [
   {
@@ -105,23 +108,25 @@ const itemsEnBegenilenler = [
     },
     info: {
       type: "Vakıfbank",
-      category: "Espressolab"
+      category: "Yeme/İçme",
+      name: "Vakıfbank Kahve Kampanyası"
     }
   },
   {
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBJKXghhZtAlmcQ3p62QL23zCvrt7sXLcPA&s",
-    alt: "https://www.axess.com.tr/axess/kampanyadetay/8/20152/axess-ile-opette-4-kez-800-tlye-250-tlye-varan-chip-para",
-    text: "Axess ile OPET'te 4 kez 800TL'ye 250TL'ye varan Chip-Para! ",
+    image: "https://www.maximum.com.tr/contentmanagement/PublishingImages/kampanyagorselleri/bireysel/Elektronik_580x460.jpg",
+    alt: "https://www.maximum.com.tr/kampanyalar/elektronik-parekende-sektoru-indirim-firsati",
+    text: "Elektronik Perakende Sektörü İndirim Fırsatı!",
     dates: {
       start: "02.02.2024",
       end: "11.11.2024"
     },
     info: {
-      type: "Axess",
-      category: "Opet"
+      type: "Maximum",
+      category: "Elektronik",
+      name: "Maximum Elektronik Kampanyası"
     }
   }
-];
+]
 
 const route = useRoute();
 const item = computed(() => {

@@ -16,8 +16,12 @@
         <ion-row>
           <ion-col v-for="item in filteredItems" :key="item.id" size="6">
             <div>
-              <img :src="item.image" @click="handleClick(item.id)" style="width: 100%; height: 100px; margin-top:10px; cursor: pointer;"/>
-              <div class="image-caption" @click="handleClick(item.id)">
+              <img
+                  :src="item.image"
+                  @click="handleClick(item.title)"
+                  style="width: 100%; height: 100px; margin-top:10px; cursor: pointer;"
+              />
+              <div class="image-caption" @click="handleClick(item.title)">
                 <h3>{{ item.title }}</h3>
               </div>
             </div>
@@ -65,8 +69,9 @@ const filteredItems = computed(() => {
   );
 });
 
-const handleClick = (imageId: number) => {
-  console.log(`Resim ${imageId} tıklandı!`);
+const handleClick = (category: string) => {
+  router.push({ name: 'FirmsPopPage', params: { category } });
+  /*console.log(`Resim ${imageId} tıklandı!`);*/
 };
 
 
