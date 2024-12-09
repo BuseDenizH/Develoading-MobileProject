@@ -18,6 +18,7 @@
         style="margin-top:20px">
       </ion-searchbar>
 
+      <!-- Kayıtlı Kartlar -->
       <div style="text-align: left; margin-bottom: 10px; padding-left: 20px;">
         <p class="title">Kayıtlı Kartlar</p>
         <hr class="line">
@@ -37,6 +38,7 @@
         </ion-card>
       </div>
 
+      <!-- Kartlar -->
       <div style="text-align: left; margin-bottom: 10px; padding-left: 20px;">
         <p class="title">Kartlar</p>
         <hr class="line">
@@ -60,36 +62,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar } from '@ionic/vue';
+import axios from 'axios';
 
 const searchTerm = ref('');
-
-const savedCards = [
+const savedCards = ref([
   { name: 'Axess', image: 'https://cdn.freelogovectors.net/wp-content/uploads/2020/07/axess_logo-300x300.png' },
   { name: 'Bonus', image: 'https://www.tatilvillam.com/assets/img/kart-reklamlari/400/garanti.png' }
-];
+]);
 
-const otherCards = [
-  { name: 'Maximum', image: 'https://www.logotypes101.com/logos/149/350AD36F2FD3EBACABAE553D46C6FAB0/maximum.png' },
-  { name: 'World', image: 'https://www.logovector.org/wp-content/uploads/logos/png/w/world_card_logo.png' },
-  { name: 'Hopi', image: 'https://logowik.com/content/uploads/images/hopi-new7564.logowik.com.webp' }
-];
+const otherCards = ref<any[]>([]);  // Backend'den alınacak kartlar
 
+// Backend'den kartları al
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:8082/api/cards');  // API URL'yi backend'e göre güncelleyin
+    otherCards.value = response.data;  // Backend'den gelen kartlar
+  } catch (error) {
+    console.error('Kartlar alınamadı:', error);
+  }
+});
+
+// Kartları filtreleme
 const filteredSavedCards = computed(() => {
   const term = searchTerm.value.toLowerCase();
   if (!term) {
-    return savedCards;
+    return savedCards.value;
   }
-  return savedCards.filter(card => card.name.toLowerCase().includes(term));
+  return savedCards.value.filter(card => card.name.toLowerCase().includes(term));
 });
 
 const filteredOtherCards = computed(() => {
   const term = searchTerm.value.toLowerCase();
   if (!term) {
-    return otherCards;
+    return otherCards.value;
   }
-  return otherCards.filter(card => card.name.toLowerCase().includes(term));
+  return otherCards.value.filter(card => card.name.toLowerCase().includes(term));
 });
 </script>
 

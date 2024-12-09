@@ -69,17 +69,15 @@ const onLogin = async () => {
     
     if (response.ok) {
       const user = await response.json();
-      const userId = user.id;
 
-      await saveUserId(userId);
-      
+      // Kullanıcı bilgilerini güvenli bir şekilde sakla
+      await SecureStoragePlugin.set({ key: 'userEmail', value: user.mail });
+      await SecureStoragePlugin.set({ key: 'userName', value: user.name });
+
       console.log('Login successful:', user);
-      
-      // Kullanıcı bilgisi alındı, yönlendir
       alert(`Hoş geldiniz, ${user.name}`);
       router.push('/tabs/tab1'); // Başarılı giriş sonrası yönlendirme
     } else {
-      // Hatalı giriş bilgileri
       alert('Email veya şifre hatalı!');
     }
   } catch (error) {
@@ -87,6 +85,8 @@ const onLogin = async () => {
     alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
   }
 };
+  
+  
 
 const saveUserId = async (id: string) => {
           await SecureStoragePlugin.set({ key: 'userId', value: id });
