@@ -37,8 +37,13 @@ public class CompanyService {
 
     // Yeni şirket ekle
     public Company saveCompany(Company company) {
+        if (company.getDbStatusId() == 0) {
+            company.setDbStatusId(1); // Varsayılan aktif durumu atayın
+        }
         return companyRepository.save(company);
     }
+
+
 
     public void deleteCompany(int id) {
         // Öncelikle şirketin var olup olmadığını kontrol edin

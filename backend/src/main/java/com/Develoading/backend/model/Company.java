@@ -14,17 +14,23 @@ public class Company {
     @Column(nullable = false, length = 150)
     private String name;
 
-    @Column(name = "industry_id")
+    @Column(name = "industry_id", nullable = false)
     private int industryId;
 
     @Column(length = 150) //
     private String image;
 
-    @Column(name = "db_created_at")
+    @Column(name = "db_created_at", updatable = false)
     private LocalDateTime dbCreatedAt;
 
     @Column(name = "db_status_id")
     private int dbStatusId;
+
+    @PrePersist
+    protected void onCreate() {
+        this.dbCreatedAt = LocalDateTime.now(); // Şirket kaydedilirken mevcut zaman atanır
+        this.dbStatusId = 1; // Varsayılan olarak aktif duruma ayarlanır
+    }
 
     public int getId() {
         return id;
@@ -60,10 +66,6 @@ public class Company {
 
     public LocalDateTime getDbCreatedAt() {
         return dbCreatedAt;
-    }
-
-    public void setDbCreatedAt(LocalDateTime dbCreatedAt) {
-        this.dbCreatedAt = dbCreatedAt;
     }
 
     public int getDbStatusId() {
