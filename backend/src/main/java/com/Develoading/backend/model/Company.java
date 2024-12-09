@@ -28,8 +28,8 @@ public class Company {
 
     @PrePersist
     protected void onCreate() {
-        this.dbCreatedAt = LocalDateTime.now(); // Şirket kaydedilirken mevcut zaman atanır
-        this.dbStatusId = 1; // Varsayılan olarak aktif duruma ayarlanır
+        this.dbCreatedAt = LocalDateTime.now();
+        this.dbStatusId = 1;
     }
 
     public int getId() {
