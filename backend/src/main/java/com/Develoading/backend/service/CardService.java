@@ -28,4 +28,27 @@ public class CardService {
     public void deleteCard(Long id) {
         cardRepository.deleteById(id);
     }
+
+
+
+
+
+/*
+    // Kategoriye göre filtreleme
+    public List<Company> getCompaniesByCategory(Integer industryId) {
+        return companyRepository.findByIndustryId(industryId);
+    }*/
+
+    // İsme göre arama
+    public List<Card> searchCard(String name) {
+        return cardRepository.findByNameContainingIgnoreCase(name);
+    }
 }
+
+
+
+
+
+
+
+
