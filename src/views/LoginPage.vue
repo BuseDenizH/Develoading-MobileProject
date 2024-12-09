@@ -42,6 +42,9 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router'; // vue-router import edildi
 import { arrowBackOutline } from 'ionicons/icons';
 import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
+
+
 // Router kullanımı
 const router = useRouter();
 
@@ -63,11 +66,15 @@ const onLogin = async () => {
         password: password.value,
       }),
     });
-
+    
     if (response.ok) {
       const user = await response.json();
-      console.log('Login successful:', user);
+      const userId = user.id;
 
+      await saveUserId(userId);
+      
+      console.log('Login successful:', user);
+      
       // Kullanıcı bilgisi alındı, yönlendir
       alert(`Hoş geldiniz, ${user.name}`);
       router.push('/tabs/tab1'); // Başarılı giriş sonrası yönlendirme
@@ -81,6 +88,10 @@ const onLogin = async () => {
   }
 };
 
+const saveUserId = async (id: string) => {
+          await SecureStoragePlugin.set({ key: 'userId', value: id });
+          console.log('User ID stored securely.');
+      };
 
 // Forgot password method
 const onForgotPassword = () => {
