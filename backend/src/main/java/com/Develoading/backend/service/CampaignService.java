@@ -22,4 +22,9 @@ public class CampaignService {
         return campaignRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Campaign not found with ID: " + id));
     }
+
+    public Campaign createCampaign(Campaign campaign) {
+        campaign.setDbCreatedAt(java.time.LocalDateTime.now());
+        return campaignRepository.save(campaign);
+    }
 }
