@@ -15,12 +15,12 @@
       <ion-searchbar 
         v-model="searchTerm" 
         placeholder="Ara..." 
-        style="margin-top:20px">
+        style="margin-top:20px; margin-bottom: 10px;">
       </ion-searchbar>
 
       <!-- Kayıtlı Kartlar -->
       <div style="text-align: left; margin-bottom: 10px; padding-left: 20px;">
-        <p class="title">Kayıtlı Kartlar</p>
+        <p class="title">Kayıtlı Kartlarım</p>
         <hr class="line">
       </div>
 
@@ -32,6 +32,7 @@
           style="flex: 1 0 30%; max-width: 30%;"
         >
           <ion-card-content>
+            <ion-button color="orange">-</ion-button>
             <img :src="card.image" :alt="card.name" style="width: 100%; height: auto;" />
           </ion-card-content>
           <ion-button fill="clear">{{ card.name }}</ion-button>
@@ -40,7 +41,7 @@
 
       <!-- Kartlar -->
       <div style="text-align: left; margin-bottom: 10px; padding-left: 20px;">
-        <p class="title">Kartlar</p>
+        <p class="title">Tüm Kartlar</p>
         <hr class="line">
       </div>
 
@@ -52,6 +53,7 @@
           style="flex: 1 0 30%; max-width: 30%;"
         >
           <ion-card-content>
+            <ion-button color="orange">+</ion-button>
             <img :src="card.image" :alt="card.name" style="width: 100%; height: auto;" />
           </ion-card-content>
           <ion-button fill="clear">{{ card.name }}</ion-button>
@@ -119,11 +121,21 @@ const filteredOtherCards = computed(() => {
   text-align: left;
   color: rgb(248, 79, 0);
   font-size: 20px;
+  display: inline;
 }
 
 .line {
   background-color: rgb(248, 79, 0);
   height: 2px;
-  margin: 0;
+  margin: 10px;
+}
+
+ion-card-content ion-button{
+  font-weight: bold;
+  font-size: 15px;
+  background-color: rgb(248, 79, 0);
+  float: right; 
+  --border-radius: 10px;
+  border-radius: 10px;
 }
 </style>
