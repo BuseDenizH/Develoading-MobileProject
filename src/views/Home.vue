@@ -1,6 +1,5 @@
 <template>
   <ion-page>
-
     <ion-header>
       <ion-toolbar>
         <ion-title>Anasayfa</ion-title>
@@ -8,152 +7,88 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
+      <ion-toolbar>
+        <ion-title class="title">En beğenilenler</ion-title>
+        <hr class="line">
+      </ion-toolbar>
 
-        <ion-toolbar>
-          <ion-title class="title">Son Kampanyalar</ion-title>
-          <hr class="line">
-        </ion-toolbar>
-      
-      <div v-for="(item, index) in itemsSonKampanyalar" :key="index" class="container">
+      <div v-for="(campaign, index) in campaigns" :key="campaign.id" class="container">
         <div class="images-container">
-          <img :src="item.image" :alt="item.alt">
+          <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <a href="tabs/tab4"><ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp"/></a>
-            <a href="tabs/tab4"><ion-icon id="bookmark" aria-hidden="true" :icon="bookmarkSharp"/></a>
-            <a href="tabs/tab4"><ion-icon id="heart" aria-hidden="true" :icon="heart"/></a>
+            <a href="tabs/tab4"><ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" /></a>
+            <a href="tabs/tab4"><ion-icon id="bookmark" aria-hidden="true" :icon="bookmarkSharp" /></a>
+            <a href="tabs/tab4"><ion-icon id="heart" aria-hidden="true" :icon="heart" /></a>
           </div>
         </div>
-        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: index } }" class="card-link">{{ item.text }}</router-link>
+        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
+          class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline"/>  {{item.dates.start}}</p>
-            <p><ion-icon aria-hidden="true" :icon="hourglassOutline"/>  {{item.dates.end}}</p>
+            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline" /> {{ campaign.beginDate.split('T')[0] }}</p>
+            <p><ion-icon aria-hidden="true" :icon="hourglassOutline" /> {{ campaign.endDate.split('T')[0] }}</p>
           </div>
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="cardOutline"/>  {{item.info.type}}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline"/>  {{item.info.category}}</p>
+            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ campaign.cardId }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ campaign.companyId }}</p>
           </div>
         </div>
       </div>
 
-        <ion-toolbar>
-          <ion-title class="title">En Beğenilenler</ion-title>
-          <hr class="line">
-        </ion-toolbar>
+      <!--  -->
 
-      <div v-for="(item, index) in itemsEnBegenilenler" :key="index" class="container">
+      <ion-toolbar>
+        <ion-title class="title">Son Kampanyalar</ion-title>
+        <hr class="line">
+      </ion-toolbar>
+
+      <div v-for="(campaign, index) in campaigns" :key="campaign.id" class="container">
         <div class="images-container">
-          <img :src="item.image" :alt="item.alt">
+          <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <a href="tabs/tab4"><ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp"/></a>
-            <a href="tabs/tab4"><ion-icon id="bookmark" aria-hidden="true" :icon="bookmarkSharp"/></a>
-            <a href="tabs/tab4"><ion-icon id="heart" aria-hidden="true" :icon="heart"/></a>
+            <a href="tabs/tab4"><ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" /></a>
+            <a href="tabs/tab4"><ion-icon id="bookmark" aria-hidden="true" :icon="bookmarkSharp" /></a>
+            <a href="tabs/tab4"><ion-icon id="heart" aria-hidden="true" :icon="heart" /></a>
           </div>
         </div>
-        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'begenilenler', id: index } }" class="card-link">{{ item.text }}</router-link>
+        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
+          class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline"/>  {{item.dates.start}}</p>
-            <p><ion-icon aria-hidden="true" :icon="hourglassOutline"/>  {{item.dates.end}}</p>
+            <p><ion-icon aria-hidden="true" :icon="calendarClearOutline" /> {{ campaign.beginDate.split('T')[0] }}</p>
+            <p><ion-icon aria-hidden="true" :icon="hourglassOutline" /> {{ campaign.endDate.split('T')[0] }}</p>
           </div>
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="cardOutline"/>  {{item.info.type}}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline"/>  {{item.info.category}}</p>
+            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ campaign.cardId }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ campaign.companyId }}</p>
           </div>
         </div>
       </div>
-      
     </ion-content>
-
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonFab, IonFabButton, IonToolbar, IonTitle, IonContent, IonIcon, IonGrid, IonRow, IonCol, IonImg, } from '@ionic/vue';
-import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, bookmarkSharp, heart, shareSocial } from 'ionicons/icons';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonRow, IonCol } from '@ionic/vue';
+import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, bookmarkSharp, heart } from 'ionicons/icons';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-const itemsSonKampanyalar = [
-  {
-    image: "https://www.bonus.com.tr/assets/img/main_slider/qrb_300924.jpg",
-    alt: "https://www.bonus.com.tr/",
-    text: "Mobil temazsız veya QR ile ödemelerinize 300TL'ye varan bonus!",
-    dates: {
-      start: "01.01.2024",
-      end: "12.12.2024"
-    },
-    info: {
-      type: "Bonus",
-      category: "Giyim/Kozmetik",
-      name: "Bonus Kampanyası"
-    }
-  },
-  {
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgBJKXghhZtAlmcQ3p62QL23zCvrt7sXLcPA&s",
-    alt: "https://www.axess.com.tr/axess/kampanyadetay/8/20152/axess-ile-opette-4-kez-800-tlye-250-tlye-varan-chip-para",
-    text: "Axess ile OPET'te 4 kez 800TL'ye 250TL'ye varan Chip-Para! ",
-    dates: {
-      start: "02.02.2024",
-      end: "11.11.2024"
-    },
-    info: {
-      type: "Axess",
-      category: "Akaryakıt",
-      name: "Axess Akaryakıt Kampanyası"
-    }
-  },
-  {
-    image: "https://hayatpay.com.tr/_next/image?url=http%3A%2F%2Fhp-fs%3A9000%2Fhp-images%2Fespressolab_olculu_%25C3%2587al%25C4%25B1%25C5%259Fma%2520Y%25C3%25BCzeyi%25201%2520kopya%25205%2520copy%25204.jpg&w=3840&q=75",
-    alt: "https://hayatpay.com.tr/kampanya/81",
-    text: "Hayat Pay ile Espressolab'den bedava kahve almak için hemen Hayat Pay uygulamasını indir, kahve kodunu kap!",
-    dates: {
-      start: "18.09.2024",
-      end: "31.10.2024"
-    },
-    info: {
-      type: "Tümü",
-      category: "Yeme/İçme",
-      name: "Hayat Pay Kahve Kampanyası"
-    }
+const campaigns = ref([]);
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:8082/api/campaigns');
+    campaigns.value = response.data;
+  } catch (error) {
+    console.error('Data could not be retrieved:', error);
   }
-]
+});
 
-const itemsEnBegenilenler = [
-  {
-    image: "https://fintechtime.com/wp-content/uploads/2018/11/Vakifbank-yeni-kart-2018.jpg",
-    alt: "https://milplus.com.tr/kampanyalar/milplus-platinum-ile-espressolabde-kahve-hediye",
-    text: "Visa Private Kredi Kartı ile Hediye Kahve Kazan!",
-    dates: {
-      start: "01.10.2024",
-      end: "31.10.2024"
-    },
-    info: {
-      type: "Vakıfbank",
-      category: "Yeme/İçme",
-      name: "Vakıfbank Kahve Kampanyası"
-    }
-  },
-  {
-    image: "https://www.maximum.com.tr/contentmanagement/PublishingImages/kampanyagorselleri/bireysel/Elektronik_580x460.jpg",
-    alt: "https://www.maximum.com.tr/kampanyalar/elektronik-parekende-sektoru-indirim-firsati",
-    text: "Elektronik Perakende Sektörü İndirim Fırsatı!",
-    dates: {
-      start: "02.02.2024",
-      end: "11.11.2024"
-    },
-    info: {
-      type: "Maximum",
-      category: "Elektronik",
-      name: "Maximum Elektronik Kampanyası"
-    }
-  }
-]
-
-const allCompanies = [...itemsSonKampanyalar, ...itemsEnBegenilenler];
-
+console.log(campaigns.value);
 </script>
-
 <style>
 .title {
   padding: 20px 16px 5px 16px;
@@ -278,5 +213,4 @@ const allCompanies = [...itemsSonKampanyalar, ...itemsEnBegenilenler];
 ion-icon {
   --ionicon-stroke-width: 40px;
 }
-
 </style>
