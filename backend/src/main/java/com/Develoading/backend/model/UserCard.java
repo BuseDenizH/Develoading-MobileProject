@@ -15,7 +15,7 @@ public class UserCard {
     private Integer userId;
 
     @Column(name = "card_id")
-    private Long cardId; // Long olarak güncellendi
+    private Long cardId;
 
     @Column(name = "db_created_at")
     private LocalDateTime dbCreatedAt;
@@ -24,7 +24,6 @@ public class UserCard {
     private Integer dbStatusId;
 
     // Getters and Setters
-
     public Integer getId() {
         return id;
     }
@@ -41,11 +40,11 @@ public class UserCard {
         this.userId = userId;
     }
 
-    public Long getCardId() { // Long olarak güncellendi
+    public Long getCardId() {
         return cardId;
     }
 
-    public void setCardId(Long cardId) { // Long olarak güncellendi
+    public void setCardId(Long cardId) {
         this.cardId = cardId;
     }
 
