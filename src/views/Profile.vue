@@ -12,23 +12,23 @@
     <ion-content :fullscreen="true">
       <div class="options">
         <a href="/tabs/tab4" class="page-option">
-          <ion-icon aria-hidden="true" :icon="personOutline" />
+          <ion-icon :icon="personOutline" />
           <ion-label>Profil Bilgileri</ion-label>
         </a>
         <a href="/tabs/tab3" class="page-option">
-          <ion-icon aria-hidden="true" :icon="cardOutline" />
+          <ion-icon :icon="cardOutline" />
           <ion-label>Kartlarım</ion-label>
         </a>
         <a href="/tabs/tab1" class="page-option">
-          <ion-icon aria-hidden="true" :icon="heartOutline" />
+          <ion-icon :icon="heartOutline" />
           <ion-label>Favoriler</ion-label>
         </a>
         <a href="/tabs/tab4" class="page-option">
-          <ion-icon aria-hidden="true" :icon="settingsOutline" />
+          <ion-icon :icon="settingsOutline" />
           <ion-label>Ayarlar</ion-label>
         </a>
         <a @click.prevent="logout" class="page-option">
-          <ion-icon aria-hidden="true" :icon="logOutOutline" />
+          <ion-icon :icon="logOutOutline" />
           <ion-label>Çıkış Yap</ion-label>
         </a>
       </div>
@@ -77,6 +77,11 @@ const logout = async () => {
     // Saklanan kullanıcı bilgilerini temizle
     await SecureStoragePlugin.remove({ key: 'userEmail' });
     await SecureStoragePlugin.remove({ key: 'userName' });
+    await SecureStoragePlugin.remove({ key: 'userId' });
+
+    // Tarayıcıda yerel depolamayı (localStorage, sessionStorage) temizle
+    localStorage.clear();
+    sessionStorage.clear();
 
     // Kullanıcıyı giriş sayfasına yönlendir
     router.push('/');

@@ -11,4 +11,6 @@ public interface UserCardRepository extends JpaRepository<UserCard, Integer> {
 
     // Kartın id'siyle kullanıcıya ait kartı bulma
     Optional<UserCard> findByUserIdAndCardId(Integer userId, Long cardId);
+
+    void deleteByUserIdAndCardId(Long userId, Long cardId);
 }

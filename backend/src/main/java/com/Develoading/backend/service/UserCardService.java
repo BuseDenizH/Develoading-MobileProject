@@ -34,6 +34,18 @@ public class UserCardService {
         return userCardRepository.save(userCard);
     }
 
+    public void removeCardFromUser(Integer userId, Long cardId) {
+        // Kullanıcı ve kart ilişkisini kontrol et
+        Optional<UserCard> userCard = userCardRepository.findByUserIdAndCardId(userId, cardId);
+        if (userCard.isEmpty()) {
+            throw new RuntimeException("This card does not exist for the user.");
+        }
+
+        // Kartı kaldır
+        userCardRepository.delete(userCard.get());
+    }
+
+
 
     // Kullanıcının kartlarını getirme
     public List<UserCard> getUserCards(Integer userId) {
@@ -43,5 +55,9 @@ public class UserCardService {
     // Belirli bir kartı kullanıcıya ait sorgulama
     public Optional<UserCard> getUserCardById(Integer userId, Long cardId) {
         return userCardRepository.findByUserIdAndCardId(userId, cardId);
+    }
+
+    public UserCard saveUserCard(UserCard userCard) {
+        return userCardRepository.save(userCard);
     }
 }

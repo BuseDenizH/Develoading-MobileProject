@@ -73,6 +73,8 @@ const onLogin = async () => {
       // Kullanıcı bilgilerini güvenli bir şekilde sakla
       await SecureStoragePlugin.set({ key: 'userEmail', value: user.mail });
       await SecureStoragePlugin.set({ key: 'userName', value: user.name });
+      await SecureStoragePlugin.set({ key: 'userId', value: user.id.toString() });  // userId'yi de sakla
+
 
       console.log('Login successful:', user);
       alert(`Hoş geldiniz, ${user.name}`);

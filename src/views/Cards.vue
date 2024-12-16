@@ -67,26 +67,48 @@
 import { ref, computed, onMounted } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar } from '@ionic/vue';
 import axios from 'axios';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 const searchTerm = ref('');
 
 // Kartlar
-const savedCards = ref([
-  { name: 'Axess', image: 'https://cdn.freelogovectors.net/wp-content/uploads/2020/07/axess_logo-300x300.png' },
-  { name: 'Bonus', image: 'https://www.tatilvillam.com/assets/img/kart-reklamlari/400/garanti.png' }
-]);
+const savedCards = ref([]);
 
 const otherCards = ref<any[]>([]);  // Backend'den alınacak kartlar
 
-// Backend'den kartları al
+const userId = ref<number | null>(null);  // UserId'yi saklayacak değişken
+
 onMounted(async () => {
-  try {
-    const response = await axios.get('http://localhost:8082/api/cards');  // API URL'yi backend'e göre güncelleyin
-    otherCards.value = response.data;  // Backend'den gelen kartlar
-  } catch (error) {
-    console.error('Kartlar alınamadı:', error);
+  // SecureStorage'den userId'yi al
+  const storedUserId = await SecureStoragePlugin.get({ key: 'userId' });
+  if (storedUserId.value) {
+    userId.value = parseInt(storedUserId.value);  // UserId'yi sayısal değere çevir
+  }
+
+  if (userId.value) {
+    try {
+      // 1. Kullanıcıya ait kartlar ve kart bilgilerini al
+      const userCardsResponse = await axios.get(`http://localhost:8082/api/user-cards/${userId.value}`);
+      const userCardIds = userCardsResponse.data.map((userCard: any) => userCard.cardId);
+
+      // 2. Kartlar tablosundan tüm kart bilgilerini al
+      const allCardsResponse = await axios.get('http://localhost:8082/api/cards');
+      const allCards = allCardsResponse.data;
+
+      // 3. Kullanıcının kart bilgilerini filtrele
+      savedCards.value = allCards.filter((card: any) => userCardIds.includes(card.id));
+
+      // 4. Diğer kartları filtrele (henüz kullanıcıya ait olmayan)
+      otherCards.value = allCards.filter((card: any) => !userCardIds.includes(card.id));
+    } catch (error) {
+      console.error('Kartlar alınamadı:', error);
+    }
+  } else {
+    console.error('Kullanıcı kimliği bulunamadı!');
   }
 });
+
+
 
 // Kartları filtreleme
 const filteredSavedCards = computed(() => {
@@ -105,23 +127,47 @@ const filteredOtherCards = computed(() => {
   return otherCards.value.filter(card => card.name.toLowerCase().includes(term));
 });
 
-// Kart ekleme fonksiyonu
-const addCard = (card: any) => {
-  // Eğer kart kaydedilmişse, zaten kaydedilmiş olmasın
+
+const addCard = async (card: any) => {
   if (!savedCards.value.some(savedCard => savedCard.name === card.name)) {
+    // Frontend'de listeye ekle
     savedCards.value.push(card);
-    // Kartı "Tüm Kartlar"dan sil
     otherCards.value = otherCards.value.filter(c => c.name !== card.name);
+
+    // Backend'e ekleme isteği
+    try {
+      const userCard = {
+        userId: userId.value,  // Kullanıcı ID'si (örnek olarak 1 kullanıldı)
+        cardId: card.id,  // Kartın ID'si
+      };
+
+      await axios.post('http://localhost:8082/api/user-cards', userCard);
+    } catch (error) {
+      console.error('Kart backendde kaydedilemedi:', error);
+    }
   }
 };
 
-// Kart silme fonksiyonu
-const removeCard = (card: any) => {
-  // Eğer kart "Tüm Kartlar"a geri eklenirse, kaydedilen kartlardan çıkar
+const removeCard = async (card: any) => {
+  // Frontend'de listeyi güncelle
   savedCards.value = savedCards.value.filter(c => c.name !== card.name);
-  // Kartı "Tüm Kartlar"a ekle
   otherCards.value.push(card);
+
+  // Backend'e silme isteği gönder
+  try {
+    if (userId.value) {
+      const response = await axios.delete(`http://localhost:8082/api/user-cards/remove/${userId.value}/${card.id}`);
+      if (response.status === 200) {
+        console.log('Kart başarıyla kaldırıldı:', response.data);
+      }
+    }
+  } catch (error) {
+    console.error('Kart backendden kaldırılamadı:', error);
+  }
 };
+
+
+
 </script>
 
 <style scoped>
