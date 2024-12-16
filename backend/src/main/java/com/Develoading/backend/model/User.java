@@ -4,23 +4,29 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user") // Veri tabanındaki tablo adı "user" ise bunu belirtir
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255) // "mail" sütunu için kısıtlama
+    @Column(name = "mail", length = 255)
     private String mail;
 
-    @Column(nullable = false, length = 255) // "password" sütunu için kısıtlama
+    @Column(name = "name", length = 255)
+    private String name;
+
+    @Column(name = "surname", length = 255)
+    private String surname;
+
+    @Column(name = "password", length = 255)
     private String password;
 
-    @Column(name = "db_created_at") // Veri tabanındaki sütun adını eşleştirir
+    @Column(name = "db_created_at")
     private LocalDateTime dbCreatedAt;
 
-    @Column(name = "db_status_id", length = 45) // "db_status_id" için sütun adı eşleştirme
+    @Column(name = "db_status_id", length = 45)
     private String dbStatusId;
 
     // Getters and Setters
@@ -38,6 +44,22 @@ public class User {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public String getPassword() {
