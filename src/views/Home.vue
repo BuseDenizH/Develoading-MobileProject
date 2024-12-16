@@ -16,13 +16,26 @@
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <a href="tabs/tab4"><ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" /></a>
-            <a href="tabs/tab4"><ion-icon id="bookmark" aria-hidden="true" :icon="bookmarkSharp" /></a>
-            <a href="tabs/tab4"><ion-icon id="heart" aria-hidden="true" :icon="heart" /></a>
+            <ion-icon
+                id="share"
+                aria-hidden="true"
+                :icon="shareSocialSharp" />
+            <ion-icon
+                id="bookmark"
+                :class="{ gray: isBookmarked(index) }"
+                aria-hidden="true"
+                :icon="bookmarkSharp"
+                @click="toggleBookmark(index)" />
+            <ion-icon
+                id="heart"
+                :class="{ red: isHearted(index) }"
+                aria-hidden="true"
+                :icon="heart"
+                @click="toggleHeart(index)" />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-          class="card-link">{{ campaign.detail }}</router-link>
+                     class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -36,8 +49,6 @@
         </div>
       </div>
 
-      <!--  -->
-
       <ion-toolbar>
         <ion-title class="title">Son Kampanyalar</ion-title>
         <hr class="line">
@@ -47,13 +58,26 @@
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <a href="tabs/tab4"><ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" /></a>
-            <a href="tabs/tab4"><ion-icon id="bookmark" aria-hidden="true" :icon="bookmarkSharp" /></a>
-            <a href="tabs/tab4"><ion-icon id="heart" aria-hidden="true" :icon="heart" /></a>
+            <ion-icon
+                id="share"
+                aria-hidden="true"
+                :icon="shareSocialSharp" />
+            <ion-icon
+                id="bookmark"
+                :class="{ gray: isBookmarked(index) }"
+                aria-hidden="true"
+                :icon="bookmarkSharp"
+                @click="toggleBookmark(index)" />
+            <ion-icon
+                id="heart"
+                :class="{ red: isHearted(index) }"
+                aria-hidden="true"
+                :icon="heart"
+                @click="toggleHeart(index)" />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-          class="card-link">{{ campaign.detail }}</router-link>
+                     class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -77,6 +101,8 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 const campaigns = ref([]);
+const hearts = ref(new Set());
+const bookmarks = ref(new Set());
 
 onMounted(async () => {
   try {
@@ -87,8 +113,28 @@ onMounted(async () => {
   }
 });
 
+const toggleHeart = (index: number) => {
+  if (hearts.value.has(index)) {
+    hearts.value.delete(index);
+  } else {
+    hearts.value.add(index);
+  }
+};
+
+const toggleBookmark = (index: number) => {
+  if (bookmarks.value.has(index)) {
+    bookmarks.value.delete(index);
+  } else {
+    bookmarks.value.add(index);
+  }
+};
+
+const isHearted = (index: number) => hearts.value.has(index);
+const isBookmarked = (index: number) => bookmarks.value.has(index);
+
 console.log(campaigns.value);
 </script>
+
 <style>
 .title {
   padding: 20px 16px 5px 16px;
@@ -124,13 +170,11 @@ console.log(campaigns.value);
   border-style: groove;
   border-color: black;
   border-width: 2px;
-  /*background-color: aqua;*/
 }
 
 .container img {
   width: 100%;
   height: auto;
-  /*border-radius: 10px;*/
 }
 
 .images-container {
@@ -147,31 +191,26 @@ console.log(campaigns.value);
   font-size: 24px;
 }
 
-.click-icons a {
-  text-decoration: none;
-  color: rgb(50, 50, 50);
+.click-icons ion-icon {
+  cursor: pointer;
 }
 
-#share {
-  margin-right: 10px;
-  margin-top: 10px;
+.white {
+  color: white;
 }
 
-#bookmark {
-  margin-right: 10px;
-  margin-top: 10px;
+.red {
+  color: red;
 }
 
-#heart {
-  margin-right: 10px;
-  margin-top: 10px;
+.gray {
+  color: gray;
 }
 
 .container p {
   font-size: 16px;
   line-height: 22px;
   color: black;
-  /*background-color: blueviolet;*/
   margin: 0 10px;
   width: 100%;
   padding: 10px 16px;
@@ -182,7 +221,6 @@ console.log(campaigns.value);
   font-size: 16px;
   line-height: 22px;
   color: black;
-  /*background-color: blueviolet;*/
   margin: 0 10px;
   width: 100%;
   padding: 10px 16px;
@@ -197,12 +235,10 @@ console.log(campaigns.value);
 }
 
 .inner-info {
-  /*background-color: rgb(255, 99, 203);*/
   width: 100%;
 }
 
 .inner-info p {
-  /*background-color: yellow;*/
   width: max-content;
   color: black;
   font-weight: normal;
