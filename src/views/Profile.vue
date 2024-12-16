@@ -40,6 +40,7 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import {
   personOutline,
   cardOutline,
