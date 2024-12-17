@@ -32,8 +32,9 @@
             <p><ion-icon aria-hidden="true" :icon="hourglassOutline" /> {{ campaign.endDate.split('T')[0] }}</p>
           </div>
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ campaign.cardId }}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ campaign.companyId }}</p>
+            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ getMappedCardName(campaign.cardId) }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign.companyId) }}
+            </p>
           </div>
         </div>
       </div>
@@ -63,8 +64,9 @@
             <p><ion-icon aria-hidden="true" :icon="hourglassOutline" /> {{ campaign.endDate.split('T')[0] }}</p>
           </div>
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ campaign.cardId }}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ campaign.companyId }}</p>
+            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ getMappedCardName(campaign.cardId) }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign.companyId) }}
+            </p>
           </div>
         </div>
       </div>
@@ -96,6 +98,34 @@ onMounted(async () => {
     console.error('Data could not be retrieved:', error);
   }
 });
+
+const cardIdMap = {
+  1: "Axess",
+  2: "CardFinans",
+  3: "Bonus",
+  4: "Maximum",
+  5: "World",
+  6: "Paraf",
+};
+
+const companyIdMap = {
+  1: "Akaryakıt",
+  2: "Giyim/Kozmetik",
+  3: "Elektronik",
+  4: "Yeme/İçme",
+  5: "Turizm/Seyahat",
+  6: "Telekomünikasyon",
+  7: "Araç Kiralama",
+};
+
+// ID'yi metne dönüştürme fonksiyonu
+const getMappedCardName = (cardId: number) => {
+  return cardIdMap[cardId] || "Bilinmeyen Kart";
+};
+
+const getMappedCompanyName = (companyId: number) => {
+  return companyIdMap[companyId] || "Bilinmeyen Şirket";
+};
 
 const toggleHeart = (index: number) => {
   if (hearts.value.has(index)) {
