@@ -31,6 +31,17 @@ public class UserService {
     }
 
 
+
+    public User updateUser(User user) {
+        User existingUser = userRepository.findByMail(user.getMail());
+        if (existingUser != null) {
+            existingUser.setName(user.getName());
+            existingUser.setSurname(user.getSurname());
+            return userRepository.save(existingUser);
+        }
+        throw new IllegalArgumentException("Kullanıcı bulunamadı.");
+    }
+
     public void deleteUserByMail(String mail) {
         User user = userRepository.findByMail(mail);
         if (user != null) {

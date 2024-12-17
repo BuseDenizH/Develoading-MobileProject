@@ -36,6 +36,18 @@ public class UserController {
         }
     }
 
+    @PutMapping("/update/{mail}")
+    public ResponseEntity<User> updateUser(@PathVariable String mail, @RequestBody User updatedUser) {
+        try {
+            updatedUser.setMail(mail); // Path'ten gelen mail'i User objesine setle
+            User savedUser = userService.updateUser(updatedUser);
+            return ResponseEntity.ok(savedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+
     // Tüm kullanıcıları listeleme
     @GetMapping
     public List<User> getAllUsers() {
