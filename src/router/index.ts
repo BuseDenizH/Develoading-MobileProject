@@ -6,6 +6,9 @@ import LoginPage from '@/views/LoginPage.vue';
 import ForgotPassword from '@/views/ForgotPassword.vue';
 import ResetPassword from '@/views/ResetPassword.vue';
 import VerifyCode from '@/views/VerifyCode.vue';
+import ProfilPopup from '@/views/ProfilPopup.vue';
+import AyarlarPopup from '@/views/AyarlarPopup.vue';
+
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -26,6 +29,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     name: 'Login',
     component: LoginPage
+  },
+  {
+    path: '/profilpopup',
+    name: 'ProfilPopup',
+    component: ProfilPopup
+  },
+  {
+    path: '/ayarlarpopup',
+    name: 'AyarlarPopup',
+    component: AyarlarPopup
   },
   {
     path: '/forgot-password',
