@@ -92,7 +92,7 @@ const bookmarks = ref(new Set());
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8082/api/campaigns');
+    const response = await axios.get('http://18.153.153.139:8082/api/campaigns');
     campaigns.value = response.data;
   } catch (error) {
     console.error('Data could not be retrieved:', error);

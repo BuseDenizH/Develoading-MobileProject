@@ -56,7 +56,7 @@ const password = ref('admin');
 
 const onLogin = async () => {
   try {
-    const response = await fetch('http://localhost:8082/api/users/login', {
+    const response = await fetch('http://18.153.153.139:8082/api/users/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

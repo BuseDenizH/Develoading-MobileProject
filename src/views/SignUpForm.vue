@@ -109,7 +109,7 @@ const register = async () => {
   if (agreeTerms.value) {
     try {
       debugger
-      const response = await fetch('http://localhost:8082/api/users/register', {
+      const response = await fetch('http://18.153.153.139:8082/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

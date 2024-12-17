@@ -88,11 +88,11 @@ onMounted(async () => {
   if (userId.value) {
     try {
       // 1. Kullanıcıya ait kartlar ve kart bilgilerini al
-      const userCardsResponse = await axios.get(`http://localhost:8082/api/user-cards/${userId.value}`);
+      const userCardsResponse = await axios.get(`http://18.153.153.139:8082/api/user-cards/${userId.value}`);
       const userCardIds = userCardsResponse.data.map((userCard: any) => userCard.cardId);
 
       // 2. Kartlar tablosundan tüm kart bilgilerini al
-      const allCardsResponse = await axios.get('http://localhost:8082/api/cards');
+      const allCardsResponse = await axios.get('http://18.153.153.139:8082/api/cards');
       const allCards = allCardsResponse.data;
 
       // 3. Kullanıcının kart bilgilerini filtrele
@@ -141,7 +141,7 @@ const addCard = async (card: any) => {
         cardId: card.id,  // Kartın ID'si
       };
 
-      await axios.post('http://localhost:8082/api/user-cards', userCard);
+      await axios.post('http://18.153.153.139:8082/api/user-cards', userCard);
     } catch (error) {
       console.error('Kart backendde kaydedilemedi:', error);
     }
@@ -156,7 +156,7 @@ const removeCard = async (card: any) => {
   // Backend'e silme isteği gönder
   try {
     if (userId.value) {
-      const response = await axios.delete(`http://localhost:8082/api/user-cards/remove/${userId.value}/${card.id}`);
+      const response = await axios.delete(`http://18.153.153.139:8082/api/user-cards/remove/${userId.value}/${card.id}`);
       if (response.status === 200) {
         console.log('Kart başarıyla kaldırıldı:', response.data);
       }
