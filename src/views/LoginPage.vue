@@ -66,7 +66,7 @@ const onLogin = async () => {
         password: password.value,
       }),
     });
-    
+
     if (response.ok) {
       const user = await response.json();
 
@@ -87,17 +87,18 @@ const onLogin = async () => {
     alert('Bir hata oluştu. Lütfen tekrar deneyiniz.');
   }
 };
-  
-  
+
+
 
 const saveUserId = async (id: string) => {
-          await SecureStoragePlugin.set({ key: 'userId', value: id });
-          console.log('User ID stored securely.');
-      };
+  await SecureStoragePlugin.set({ key: 'userId', value: id });
+  console.log('User ID stored securely.');
+};
 
 // Forgot password method
 const onForgotPassword = () => {
   console.log('Şifremi Unuttum tiklandi');
+  router.push({ name: 'ForgotPassword' });
 };
 
 // Navigation method (this would require an actual implementation)

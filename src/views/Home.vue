@@ -16,26 +16,15 @@
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon
-                id="share"
-                aria-hidden="true"
-                :icon="shareSocialSharp" />
-            <ion-icon
-                id="bookmark"
-                :class="{ gray: isBookmarked(index) }"
-                aria-hidden="true"
-                :icon="bookmarkSharp"
-                @click="toggleBookmark(index)" />
-            <ion-icon
-                id="heart"
-                :class="{ red: isHearted(index) }"
-                aria-hidden="true"
-                :icon="heart"
-                @click="toggleHeart(index)" />
+            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" />
+            <ion-icon id="bookmark" :class="{ gray: isBookmarked(index) }" aria-hidden="true" :icon="bookmarkSharp"
+              @click="toggleBookmark(index)" />
+            <ion-icon id="heart" :class="{ red: isHearted(index) }" aria-hidden="true" :icon="heart"
+              @click="toggleHeart(index)" />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-                     class="card-link">{{ campaign.detail }}</router-link>
+          class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -58,26 +47,15 @@
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon
-                id="share"
-                aria-hidden="true"
-                :icon="shareSocialSharp" />
-            <ion-icon
-                id="bookmark"
-                :class="{ gray: isBookmarked(index) }"
-                aria-hidden="true"
-                :icon="bookmarkSharp"
-                @click="toggleBookmark(index)" />
-            <ion-icon
-                id="heart"
-                :class="{ red: isHearted(index) }"
-                aria-hidden="true"
-                :icon="heart"
-                @click="toggleHeart(index)" />
+            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" />
+            <ion-icon id="bookmark" :class="{ gray: isBookmarked(index) }" aria-hidden="true" :icon="bookmarkSharp"
+              @click="toggleBookmark(index)" />
+            <ion-icon id="heart" :class="{ red: isHearted(index) }" aria-hidden="true" :icon="heart"
+              @click="toggleHeart(index)" />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-                     class="card-link">{{ campaign.detail }}</router-link>
+          class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -99,6 +77,12 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonRow, 
 import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, bookmarkSharp, heart } from 'ionicons/icons';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import {
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+} from '@ionic/vue';
 
 const campaigns = ref([]);
 const hearts = ref(new Set());

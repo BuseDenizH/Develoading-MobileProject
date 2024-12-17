@@ -3,6 +3,9 @@ import { RouteRecordRaw } from 'vue-router';
 import TabsPage from '../views/TabsPage.vue';
 import SignUpForm from '@/views/SignUpForm.vue';
 import LoginPage from '@/views/LoginPage.vue';
+import ForgotPassword from '@/views/ForgotPassword.vue';
+import ResetPassword from '@/views/ResetPassword.vue';
+import VerifyCode from '@/views/VerifyCode.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,6 +26,21 @@ const routes: Array<RouteRecordRaw> = [
     path: '/login',
     name: 'Login',
     component: LoginPage
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: ForgotPassword
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: ResetPassword
+  },
+  {
+    path: '/verify-code',
+    name: 'VerifyCode',
+    component: VerifyCode
   },
   {
     path: '/tabs/',
@@ -58,7 +76,7 @@ const routes: Array<RouteRecordRaw> = [
         path: 'tab6/:category',
         name: 'FirmsPopPage',
         component: () => import('@/views/FirmsPopPage.vue'),
-        props: true 
+        props: true
       }
     ]
   }
