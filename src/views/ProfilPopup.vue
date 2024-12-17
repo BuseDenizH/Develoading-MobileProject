@@ -231,3 +231,4 @@ const sendRequest = async () => {
   padding: 8px 16px; /* Butonun iç boşluğunu küçültüyoruz */
 }
 </style>
+
