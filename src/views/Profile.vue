@@ -11,7 +11,7 @@
 
     <ion-content :fullscreen="true">
       <div class="options">
-        <a href="/tabs/tab4" class="page-option">
+        <a @click.prevent="goToProfilePopup" class="page-option">
           <ion-icon :icon="personOutline" />
           <ion-label>Profil Bilgileri</ion-label>
         </a>
@@ -23,7 +23,7 @@
           <ion-icon :icon="heartOutline" />
           <ion-label>Favoriler</ion-label>
         </a>
-        <a href="/tabs/tab4" class="page-option">
+        <a @click.prevent="goToAyarlarPopup" class="page-option">
           <ion-icon :icon="settingsOutline" />
           <ion-label>Ayarlar</ion-label>
         </a>
@@ -48,6 +48,15 @@ import {
   settingsOutline,
   logOutOutline,
 } from 'ionicons/icons';
+
+const goToProfilePopup = () => {
+  router.push('/profilpopup');
+};
+
+const goToAyarlarPopup = () => {
+  router.push('/ayarlarpopup');
+};
+
 
 // Router instance
 const router = useRouter();
