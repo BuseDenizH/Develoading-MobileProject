@@ -12,7 +12,7 @@
         <!-- Company Name -->
         <ion-row class="ion-justify-content-center">
           <ion-col size="auto">
-            <ion-text color="medium" class="company-name">Company Name</ion-text>
+            <ion-text color="medium" class="company-name">campagnify</ion-text>
           </ion-col>
         </ion-row>
 
@@ -28,7 +28,7 @@
             <ion-text color="medium" class="welcome-text">Merhaba! Kampanya uygulamasına hoşgeldiniz.</ion-text>
           </ion-col>
         </ion-row>
-        
+
         <form @submit.prevent="register">
           <!-- Email Field -->
           <ion-item>
@@ -45,13 +45,15 @@
           <!-- Confirm Password Field -->
           <ion-item>
             <ion-label position="stacked" color="danger">Şifreyi Tekrar Girin</ion-label>
-            <ion-input type="password" placeholder="Şifrenizi tekrar giriniz" v-model="confirmPassword" required></ion-input>
+            <ion-input type="password" placeholder="Şifrenizi tekrar giriniz" v-model="confirmPassword"
+              required></ion-input>
           </ion-item>
 
           <!-- Terms and Privacy Agreement -->
           <ion-item lines="none">
             <ion-checkbox slot="start" v-model="agreeTerms"></ion-checkbox>
-            <ion-label>I agree to the <span class="terms">Terms of Services</span> and <span class="privacy">Privacy Policy</span>.</ion-label>
+            <ion-label>I agree to the <span class="terms">Terms of Services</span> and <span class="privacy">Privacy
+                Policy</span>.</ion-label>
           </ion-item>
 
           <!-- Sign Up Button -->
@@ -114,19 +116,18 @@ const register = async () => {
         },
         body: JSON.stringify({
           mail: mail.value,
-        password: password.value,
-           }),
+          password: password.value,
+        }),
       });
- debugger
+      debugger
       if (response.ok) {
         alert('Kayıt başarılı!');
         router.push({ name: 'Login' });
       } else {
-        alert('Kayıt sırasında bir hata oluştu.');
-         const errorMessage = await response.text();
-  console.error(`Error: ${response.status} - ${errorMessage}`);
-  alert(`Kayıt sırasında bir hata oluştu. Hata: ${response.status}`);
-  return;
+        const errorMessage = await response.text();
+        console.error(`Error: ${response.status} - ${errorMessage}`);
+        alert(`Bu mail hesabı zaten kayıtlı. ${response.status}`);
+        return;
       }
     } catch (error) {
       console.error('Kayıt başarısız:', error);
@@ -150,11 +151,15 @@ const register = async () => {
   margin-bottom: 10px;
 }
 
-.company-name, .signup-title, .welcome-text, .or-text {
+.company-name,
+.signup-title,
+.welcome-text,
+.or-text {
   text-align: center;
 }
 
-.terms, .privacy {
+.terms,
+.privacy {
   color: red;
 }
 
