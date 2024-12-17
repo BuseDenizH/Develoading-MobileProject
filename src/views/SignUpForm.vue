@@ -126,7 +126,7 @@ const register = async () => {
       } else {
         const errorMessage = await response.text();
         console.error(`Error: ${response.status} - ${errorMessage}`);
-        alert(`Bu mail hesabı zaten kayıtlı. ${response.status}`);
+        alert(`Bu mail hesabı zaten kayıtlı.`);
         return;
       }
     } catch (error) {
