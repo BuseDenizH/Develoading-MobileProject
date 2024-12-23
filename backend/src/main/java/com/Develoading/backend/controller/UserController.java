@@ -47,6 +47,20 @@ public class UserController {
         }
     }
 
+    @PutMapping("/updatemail/{mail}")
+    public ResponseEntity<User> updateMail(@PathVariable String mail, @RequestParam String newMail) {
+        User user = userService.getUserByMail(mail);
+        if (user == null) {
+            return ResponseEntity.notFound().build(); // Kullanıcı bulunamazsa 404 döndür
+        }
+        if (userService.getUserByMail(newMail) != null) {
+            return ResponseEntity.badRequest().body(null); // Yeni mail zaten kullanılıyorsa hata
+        }
+        user.setMail(newMail); // Yeni maili setle
+        User updatedUser = userService.saveUser(user); // Güncellenmiş kullanıcıyı kaydet
+        return ResponseEntity.ok(updatedUser);
+    }
+
 
     // Tüm kullanıcıları listeleme
     @GetMapping
