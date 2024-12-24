@@ -149,14 +149,24 @@ const saveName = async () => {
 // Yeni e-posta kaydetme
 const saveEmail = async () => {
   try {
-    // Yeni e-posta adresini sakla
-    await SecureStoragePlugin.set({ key: 'userEmail', value: newEmail.value });
-    userEmail.value = newEmail.value; // Kullanıcıya yeni e-posta değerini göster
+    // BACKEND İSTEĞİ EKLENDİ
+    const res = await axios.put(
+      `http://localhost:8082/api/users/updatemail/${userEmail.value}`, // Kullanıcının mevcut e-postası
+      null,
+      { params: { newMail: newEmail.value } } // Yeni e-posta parametresi
+    );
+
+    // İstek başarılı olursa e-posta değerlerini güncelle
+    userEmail.value = res.data.mail;
     isEmailModalOpen.value = false; // Modal'ı kapat
-  } catch (error) {
-    console.error('Error saving email:', error);
+    response.value = 'E-posta başarıyla güncellendi.';
+  } catch (err) {
+    // Hata mesajı göster
+    error.value = 'E-posta değiştirme sırasında bir hata oluştu.';
+    console.error(err);
   }
 };
+
 
 // Backend'e request gönderme fonksiyonu
 const sendRequest = async () => {

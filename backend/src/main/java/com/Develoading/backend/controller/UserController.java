@@ -48,6 +48,7 @@ public class UserController {
     }
 
     @PutMapping("/updatemail/{mail}")
+    @CrossOrigin(origins = "http://localhost:8100")
     public ResponseEntity<User> updateMail(@PathVariable String mail, @RequestParam String newMail) {
         User user = userService.getUserByMail(mail);
         if (user == null) {
