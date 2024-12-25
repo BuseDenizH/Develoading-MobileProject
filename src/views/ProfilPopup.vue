@@ -96,7 +96,7 @@ const isEmailModalOpen = ref(false); // Mail düzenleme modal'ı durumu
 const isNameModalOpen = ref(false); // Ad Soyad düzenleme modal'ı durumu
 const response = ref<string | null>(null); // Backend yanıtı
 const error = ref<string | null>(null); // Hata mesajı
-
+/*
 // Kullanıcı bilgilerini yükleme
 onMounted(async () => {
   try {
@@ -111,6 +111,29 @@ onMounted(async () => {
     console.error('Error loading user data:', error);
   }
 });
+*/
+onMounted(async () => {
+  try {
+    // Secure Storage'dan mevcut kullanıcı bilgilerini al
+    const emailData = await SecureStoragePlugin.get({ key: 'userEmail' });
+    const nameData = await SecureStoragePlugin.get({ key: 'userName' });
+
+    userEmail.value = emailData.value || 'admin@admin.com';
+    userName.value = nameData.value || 'İsim Soyisim';
+
+    // Backend'den güncel kullanıcı bilgilerini al
+    const res = await axios.get(`http://localhost:8082/api/users/${userEmail.value}`);
+    const fullName = `${res.data.name} ${res.data.surname}`;
+
+    userName.value = fullName;
+
+    // Secure Storage'a güncellenmiş kullanıcı bilgilerini kaydet
+    await SecureStoragePlugin.set({ key: 'userName', value: fullName });
+  } catch (error) {
+    console.error('Error loading user data:', error);
+  }
+});
+
 
 // Ad Soyad düzenleme modal'ını aç
 const editName = () => {
@@ -134,15 +157,31 @@ const closeEmailModal = () => {
   isEmailModalOpen.value = false;
 };
 
+
 // Yeni ad soyad kaydetme
 const saveName = async () => {
   try {
-    // Yeni ad soyadını sakla
-    await SecureStoragePlugin.set({ key: 'userName', value: newName.value });
-    userName.value = newName.value; // Kullanıcıya yeni ad soyad değerini göster
-    isNameModalOpen.value = false; // Modal'ı kapat
-  } catch (error) {
-    console.error('Error saving name:', error);
+    const res = await axios.put(`http://localhost:8082/api/users/update/${userEmail.value}`, {
+      name: newName.value.split(' ')[0], // İlk kelime: Ad
+      surname: newName.value.split(' ')[1] || '', // İkinci kelime: Soyad
+    });
+
+    const updatedName = res.data.name || '';
+    const updatedSurname = res.data.surname || '';
+
+    // Backend'den gelen güncel adı frontend'de güncelle
+    userName.value = `${updatedName} ${updatedSurname}`;
+    response.value = 'Ad ve soyad başarıyla güncellendi.';
+    isNameModalOpen.value = false;
+
+    // Güncellenen değeri Secure Storage'a kaydet
+    await SecureStoragePlugin.set({
+      key: 'userName',
+      value: `${updatedName} ${updatedSurname}`,
+    });
+  } catch (err) {
+    error.value = 'Ad ve soyad değiştirme sırasında bir hata oluştu.';
+    console.error(err);
   }
 };
 
