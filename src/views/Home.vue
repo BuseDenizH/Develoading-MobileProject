@@ -17,8 +17,6 @@
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
             <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" />
-            <ion-icon id="bookmark" :class="{ gray: isBookmarked(index) }" aria-hidden="true" :icon="bookmarkSharp"
-              @click="toggleBookmark(index)" />
             <ion-icon id="heart" :class="{ red: isHearted(index) }" aria-hidden="true" :icon="heart"
               @click="toggleHeart(index)" />
           </div>
@@ -49,8 +47,6 @@
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
             <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" />
-            <ion-icon id="bookmark" :class="{ gray: isBookmarked(index) }" aria-hidden="true" :icon="bookmarkSharp"
-              @click="toggleBookmark(index)" />
             <ion-icon id="heart" :class="{ red: isHearted(index) }" aria-hidden="true" :icon="heart"
               @click="toggleHeart(index)" />
           </div>
@@ -76,7 +72,7 @@
 
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, IonRow, IonCol } from '@ionic/vue';
-import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, bookmarkSharp, heart } from 'ionicons/icons';
+import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, heart } from 'ionicons/icons';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import {
@@ -88,7 +84,6 @@ import {
 
 const campaigns = ref([]);
 const hearts = ref(new Set());
-const bookmarks = ref(new Set());
 
 onMounted(async () => {
   try {
@@ -135,16 +130,7 @@ const toggleHeart = (index: number) => {
   }
 };
 
-const toggleBookmark = (index: number) => {
-  if (bookmarks.value.has(index)) {
-    bookmarks.value.delete(index);
-  } else {
-    bookmarks.value.add(index);
-  }
-};
-
 const isHearted = (index: number) => hearts.value.has(index);
-const isBookmarked = (index: number) => bookmarks.value.has(index);
 
 console.log(campaigns.value);
 </script>
