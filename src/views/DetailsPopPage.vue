@@ -97,7 +97,7 @@ const isUsed = ref(false); // Button status
 onMounted(async () => {
   const { id } = route.params;
   try {
-    const response = await axios.get(`http://localhost:8082/api/campaigns/${id}`);
+    const response = await axios.get(`http://18.153.153.139:8082/api/campaigns/${id}`);
     item.value = response.data;
   } catch (error) {
     console.error('Detaylar alınamadı:', error);
