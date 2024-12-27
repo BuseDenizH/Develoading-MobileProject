@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import java.util.stream.Collectors;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +39,20 @@ public class UserCardController {
     public ResponseEntity<UserCard> getUserCard(@PathVariable Integer userId, @PathVariable Long cardId) {
         Optional<UserCard> userCard = userCardService.getUserCardById(userId, cardId);
         return userCard.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // Kartlara ait kullanıcıları getirme
+    @GetMapping("/cards/{cardId}")
+    public ResponseEntity<List<Integer>> getUsersByCard(@PathVariable Long cardId) {
+        // Belirli bir kart id'sine ait tüm kullanıcıları buluyoruz
+        List<UserCard> userCards = userCardService.getUserCardsByCardId(cardId);
+
+        // Kullanıcı ID'lerini almak için bir liste oluşturuyoruz
+        List<Integer> userIds = userCards.stream()
+                .map(UserCard::getUserId)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(userIds);
     }
 
 

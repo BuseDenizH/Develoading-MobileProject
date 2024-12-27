@@ -34,6 +34,13 @@ public class UserCardService {
         return userCardRepository.save(userCard);
     }
 
+
+    // Kart id'sine ait tüm kullanıcıları getirme
+    public List<UserCard> getUserCardsByCardId(Long cardId) {
+        return userCardRepository.findByCardId(cardId);
+    }
+
+
     public void removeCardFromUser(Integer userId, Long cardId) {
         // Kullanıcı ve kart ilişkisini kontrol et
         Optional<UserCard> userCard = userCardRepository.findByUserIdAndCardId(userId, cardId);
