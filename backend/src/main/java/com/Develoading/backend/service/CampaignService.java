@@ -27,4 +27,9 @@ public class CampaignService {
         campaign.setDbCreatedAt(java.time.LocalDateTime.now());
         return campaignRepository.save(campaign);
     }
+
+    // Kart ID'sine göre kampanyaları almak için metot
+    public List<Campaign> getCampaignsByCardId(Integer cardId) {
+        return campaignRepository.findByCardId(cardId);
+    }
 }

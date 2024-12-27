@@ -33,4 +33,14 @@ public class CampaignController {
         Campaign createdCampaign = campaignService.createCampaign(campaign);
         return new ResponseEntity<>(createdCampaign, HttpStatus.CREATED);
     }
+
+    // Kart ID'sine göre kampanyaları döndüren yeni GET endpoint'i
+    @GetMapping("/by-card/{cardId}")
+    public ResponseEntity<List<Campaign>> getCampaignsByCardId(@PathVariable Integer cardId) {
+        List<Campaign> campaigns = campaignService.getCampaignsByCardId(cardId);
+        if (campaigns.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(campaigns, HttpStatus.OK);
+    }
 }
