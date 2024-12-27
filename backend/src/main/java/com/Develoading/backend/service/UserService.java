@@ -19,6 +19,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updatePassword(String mail, String oldPassword, String newPassword) {
+        User user = userRepository.findByMail(mail);
+        if (user == null) {
+            throw new IllegalArgumentException("Kullanıcı bulunamadı.");
+        }
+
+        // Eski şifrenin doğruluğunu kontrol et
+        if (!user.getPassword().equals(oldPassword)) {
+            throw new IllegalArgumentException("Mevcut şifre yanlış.");
+        }
+
+        // Yeni şifreyi güncelle
+        user.setPassword(newPassword);
+        return userRepository.save(user);
+    }
+
 
     // E-posta ile kullanıcı sorgulama
     public User getUserByMail(String mail) {

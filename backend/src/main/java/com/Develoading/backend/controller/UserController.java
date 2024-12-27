@@ -1,6 +1,7 @@
 package com.Develoading.backend.controller;
 
 import com.Develoading.backend.model.User;
+import com.Develoading.backend.model.PasswordUpdateRequest;
 import com.Develoading.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +103,24 @@ public class UserController {
         User updatedUser = userService.saveUser(user); // Güncellenmiş kullanıcıyı kaydet
         return ResponseEntity.ok(updatedUser);
     }
+
+    @PutMapping("/updatepassword/{mail}")
+    @CrossOrigin(origins = "http://localhost:8100")
+    public ResponseEntity<User> updatePassword(
+            @PathVariable String mail,
+            @RequestBody PasswordUpdateRequest request) {
+        try {
+            if (request.getOldPassword() == null || request.getNewPassword() == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            User updatedUser = userService.updatePassword(mail, request.getOldPassword(), request.getNewPassword());
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
 
 
     // Tüm kullanıcıları listeleme
