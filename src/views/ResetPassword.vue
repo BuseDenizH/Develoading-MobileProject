@@ -26,7 +26,7 @@
                 </ion-item>
 
                 <ion-button expand="block" type="submit" color="danger" @click="resetPassword">
-                    Şifreyi Yenile
+                    Şifreyi Güncelle
                 </ion-button>
             </div>
         </ion-content>
@@ -38,21 +38,43 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router'; // vue-router import edildi
 import { arrowBackOutline } from 'ionicons/icons';
 import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
+import axios from 'axios';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 const router = useRouter();
 const newPassword = ref('');
 const confirmNewPassword = ref('');
 
 const goBack = () => {
-    router.push({ name: 'VerifyCode' }); // Geri yönlendirme işlemi
+    router.push({ name: 'VerifyCode' });
 };
 
-const resetPassword = () => {
-    if (newPassword.value === confirmNewPassword.value) {
-        alert('Şifre başarıyla değiştirildi.');
-        router.push('/login'); // Şifre başarıyla değiştirildiğinde kullanıcıyı giriş sayfasına yönlendir
-    } else {
-        alert('Yeni şifreler eşleşmiyor.');
+const resetPassword = async () => {
+    try {
+        console.log(newPassword.value);
+        console.log(confirmNewPassword.value);
+        if (newPassword.value !== confirmNewPassword.value) {
+            alert('Yeni şifreler eşleşmiyor.');
+            return;
+        }
+
+        const userEmail = await SecureStoragePlugin.get({ key: 'userEmail' });
+        console.log(userEmail.value);
+        // API çağrısı yap
+        const response = await axios.put(`http://localhost:8082/api/users/modifypassword/${userEmail.value}`, {
+            newPassword: newPassword.value
+        },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+        alert('Şifre başarıyla güncellendi.');
+        router.push('/login'); // Başarılı işlem sonrası giriş sayfasına yönlendirme
+    } catch (err) {
+        alert('Şifre değiştirme sırasında bir hata oluştu.');
+        console.error(err);
     }
 };
 </script>

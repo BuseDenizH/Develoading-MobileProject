@@ -1,14 +1,25 @@
 package com.Develoading.backend.controller;
 
-import com.Develoading.backend.model.User;
-import com.Develoading.backend.model.PasswordUpdateRequest;
-import com.Develoading.backend.service.UserService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.Develoading.backend.model.PasswordUpdateRequest;
+import com.Develoading.backend.model.User;
+import com.Develoading.backend.service.UserService;
 
 
 @RestController
@@ -89,10 +100,6 @@ public class UserController {
         }
     }
 
-
-
-
-
     @PutMapping("/updatemail/{mail}")
     @CrossOrigin(origins = "http://localhost:8100")
     public ResponseEntity<User> updateMail(@PathVariable String mail, @RequestParam String newMail) {
@@ -119,6 +126,25 @@ public class UserController {
             }
 
             User updatedUser = userService.updatePassword(mail, request.getOldPassword(), request.getNewPassword());
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PutMapping("/modifypassword/{mail}")
+    @CrossOrigin(origins = "http://localhost:8100")
+    public ResponseEntity<User> modifypassword(
+            @PathVariable String mail,
+            @RequestBody PasswordUpdateRequest request) {
+        try {
+            // Yeni şifrenin boş olup olmadığını kontrol et
+            if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            // Şifre güncelleme işlemini yap
+            User updatedUser = userService.updatePassword(mail, request.getNewPassword());
             return ResponseEntity.ok(updatedUser);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);

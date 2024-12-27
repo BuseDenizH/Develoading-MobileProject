@@ -1,10 +1,12 @@
 package com.Develoading.backend.service;
 
-import com.Develoading.backend.model.User;
-import com.Develoading.backend.repository.UserRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import com.Develoading.backend.model.User;
+import com.Develoading.backend.repository.UserRepository;
 @Service
 public class UserService {
 
@@ -34,6 +36,18 @@ public class UserService {
         user.setPassword(newPassword);
         return userRepository.save(user);
     }
+
+    public User updatePassword(String mail, String newPassword) {
+        User user = userRepository.findByMail(mail);
+        if (user == null) {
+            throw new IllegalArgumentException("Kullanıcı bulunamadı.");
+        }
+
+        // Yeni şifreyi güncelle
+        user.setPassword(newPassword);
+        return userRepository.save(user);
+    }
+
 
 
     // E-posta ile kullanıcı sorgulama
