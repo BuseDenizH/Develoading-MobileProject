@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 
 @RestController
@@ -14,6 +16,45 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JavaMailSender mailSender; // E-posta gönderimi için
+
+    @PostMapping("/reset-password/{email}")
+    @CrossOrigin(origins = "")
+    public ResponseEntity<?> resetPassword(@PathVariable String email) {
+
+        User user = userService.getUserByMail(email);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 6 haneli rastgele bir şifre yenileme kodu oluştur
+        String resetCode = generateResetCode();
+
+        // E-posta gönderme
+        sendResetEmail(email, resetCode);
+
+        // Burada reset kodunu veritabanında saklamak da isteyebilirsiniz
+
+        return ResponseEntity.ok().body(resetCode);
+    }
+
+    // E-posta gönderme işlemi
+    private void sendResetEmail(String email, String resetCode) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Şifre Yenileme Bağlantısı");
+        message.setText("Şifre yenileme kodunuz: " + resetCode);
+        message.setFrom("develoadingg@gmail.com");
+        mailSender.send(message);
+    }
+
+    // 6 haneli şifre yenileme kodu üretme
+    private String generateResetCode() {
+        int code = (int)(Math.random() * 999999);
+        return String.format("%06d", code); // 6 haneli formatta
+    }
 
     @PostMapping("/register")
     @CrossOrigin(origins = "")

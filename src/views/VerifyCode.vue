@@ -28,14 +28,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // vue-router import edildi
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router'; // vue-router import edildi
 import { arrowBackOutline } from 'ionicons/icons';
 import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
 
 const router = useRouter();
+const route = useRoute();
+
 const email = ref('user@example.com'); // Kullanıcı e-posta adresi (örnek olarak)
 const verificationCode = ref('');
+const backendResetCode = ref('');
+
+onMounted(() => {
+    // Query parametrelerinden email ve resetCode'u al
+    console.log('Route Query:', route.query); // Burada değerler görünüyor mu?
+    email.value = route.query.email as string;
+    backendResetCode.value = route.query.code as string;
+});
 
 const goBack = () => {
     router.push({ name: 'ForgotPassword' }); // Geri yönlendirme işlemi
@@ -43,10 +53,13 @@ const goBack = () => {
 
 const verifyCode = async () => {
     // Kod doğrulama işlemi
-    if (verificationCode.value === '123456') { // Bu örnek bir doğrulama kodudur
-        router.push({ name: 'ResetPassword' }); // Doğru kod girildiyse şifre yenileme sayfasına yönlendir
+    if (verificationCode.value === backendResetCode.value) {
+        alert('Kod doğrulandı!');
+        router.push({ name: 'ResetPassword' });
     } else {
-        alert('Doğru kodu giriniz!');
+        alert('Yanlış giriş!');
+        console.log(email.value);
+        console.log(backendResetCode.value);
     }
 };
 </script>

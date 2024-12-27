@@ -30,6 +30,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { arrowBackOutline } from 'ionicons/icons';
+import axios from 'axios';
 import {
     IonPage,
     IonHeader,
@@ -48,11 +49,26 @@ const email = ref('');
 const router = useRouter();
 
 // Function to send the reset link
-const sendResetLink = () => {
-    console.log('Şifre yenileme bağlantısı gönderildi:', email.value);
-    // Here you would normally call an API to send the reset link
-    alert('Şifre yenileme bağlantısı gönderildi.');
-    router.push('/verify-code'); // Redirect back to the login page after sending the link
+const sendResetLink = async () => {
+    try {
+        // Sending a GET request with email as part of the URL path
+        const response = await axios.post(`http://localhost:8082/api/users/reset-password/${email.value}`);
+
+        if (response.status === 200) {
+            alert('Şifre yenileme bağlantısı gönderildi.');
+            const resetCode = response.data;
+
+            router.push({
+                name: 'VerifyCode',
+                query: { email: email.value, code: resetCode }
+            });
+        } else {
+            alert('Kullanıcı bulunamadı. Lütfen geçerli bir email adresi giriniz.');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+    }
 };
 
 // Navigation back to login page
