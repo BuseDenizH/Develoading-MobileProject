@@ -10,4 +10,7 @@ import java.util.List;
 public interface CampaignRepository extends JpaRepository<Campaign, Integer> {
     // Kart ID'sine göre kampanyaları bulma
     List<Campaign> findByCardId(Integer cardId);
+
+    // Bitiş tarihine göre sıralanmış kampanyaları bulma
+    List<Campaign> findAllByOrderByEndDateAsc();
 }

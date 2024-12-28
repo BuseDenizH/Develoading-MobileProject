@@ -22,7 +22,13 @@ public class CampaignController {
     @GetMapping
     public List<Campaign> getAllCampaigns() {
         return campaignService.getAllCampaigns();
-    }
+    }//bitiş tarihine göre sıralar
+
+    @GetMapping("/allrandom")
+    public List<Campaign> getAllCampaignsss() {
+        return campaignService.getAllCampaignsss();
+    }//rastgele hepsini sıralar
+
 
     @GetMapping("/{id}")
     public Campaign getCampaignById(@PathVariable Integer id) {

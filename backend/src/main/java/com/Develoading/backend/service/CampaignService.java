@@ -14,9 +14,14 @@ public class CampaignService {
         this.campaignRepository = campaignRepository;
     }
 
-    public List<Campaign> getAllCampaigns() {
+    public List<Campaign> getAllCampaignsss() {
         return campaignRepository.findAll();
     }
+
+    public List<Campaign> getAllCampaigns() {
+        return campaignRepository.findAllByOrderByEndDateAsc();  // Kampanyaları bitiş tarihine göre sıralar
+    }
+
 
     public Campaign getCampaignById(Integer id) {
         return campaignRepository.findById(id)
