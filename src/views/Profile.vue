@@ -23,6 +23,10 @@
           <ion-icon :icon="heartOutline" />
           <ion-label>Favoriler</ion-label>
         </a>
+             <a @click.prevent="goToKullanilanlar" class="page-option">
+  <ion-icon :icon="basketOutline" />
+  <ion-label>Kullanılanlar</ion-label>
+</a>
         <a @click.prevent="goToAyarlarPopup" class="page-option">
           <ion-icon :icon="settingsOutline" />
           <ion-label>Ayarlar</ion-label>
@@ -47,6 +51,7 @@ import {
   heartOutline,
   settingsOutline,
   logOutOutline,
+  basketOutline
 } from 'ionicons/icons';
 
 const goToProfilePopup = () => {
