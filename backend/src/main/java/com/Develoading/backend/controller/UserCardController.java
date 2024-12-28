@@ -1,11 +1,15 @@
 package com.Develoading.backend.controller;
 
 import com.Develoading.backend.model.UserCard;
+import com.Develoading.backend.model.Campaign;
+import com.Develoading.backend.service.CampaignService;
 import com.Develoading.backend.service.UserCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 
@@ -19,6 +23,10 @@ public class UserCardController {
 
     @Autowired
     private UserCardService userCardService;
+
+
+    @Autowired
+    private CampaignService campaignService;
 
     // Kullanıcıya kart ekleme
     @PostMapping("/add")
@@ -76,6 +84,30 @@ public class UserCardController {
         }
     }
 
+
+
+
+    @GetMapping("/{userId}/campaigns")
+    public ResponseEntity<List<Campaign>> getUserCampaigns(@PathVariable Integer userId) {
+        // Kullanıcıya ait kartları alın
+        List<UserCard> userCards = userCardService.getUserCards(userId);
+
+        if (userCards.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        // Kampanyaları toplamak için bir liste oluşturun
+        List<Campaign> allCampaigns = new ArrayList<>();
+
+        // Her kart için kampanyaları alın
+        for (UserCard userCard : userCards) {
+            Long cardId = userCard.getCardId(); // Kart ID'sini alın
+            List<Campaign> campaigns = campaignService.getCampaignsByCardId(cardId.intValue()); // Kampanyaları çekin
+            allCampaigns.addAll(campaigns); // Kampanyaları listeye ekleyin
+        }
+
+        return ResponseEntity.ok(allCampaigns); // Kampanyaları döndürün
+    }
 
 
 }
