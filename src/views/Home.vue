@@ -7,11 +7,20 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <ion-toolbar>
-        <ion-title class="title">En beğenilenler</ion-title>
-        <hr class="line">
-      </ion-toolbar>
+     <ion-toolbar>
+  <ion-title class="title">En beğenilenler</ion-title>
+  <div class="filter-bar">
+    <label for="filter">filtre</label>
+    <select id="filter" v-model="selectedFilter" @change="applyFilter">
+      <option value="normal">Normal</option>
+      <option value="cards">Kartlarıma Göre</option>
+     
+    </select>
+  </div>
+  <hr class="line">
+</ion-toolbar>
 
+ <!-- Kampanyalar Listesi -->
       <div v-for="(campaign, index) in campaigns" :key="campaign.id" class="container">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
@@ -86,41 +95,67 @@ import { ref, onMounted } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 
-const campaigns = ref<any[]>([]);
+const campaigns = ref<any[]>([]); // Kampanyalar listesi
 const hearts = ref<Set<number>>(new Set());
+const userId = ref<number>(0);  // Kullanıcı ID'si başlangıçta 0
+const selectedFilter = ref('normal'); // Filtreyi 'normal' olarak başlatıyoruz
 
-// Kullanıcının daha önce beğendiği kampanyaları al
+// Kullanıcı ID'sini SecureStorage'den al ve ilgili API isteklerini yap
 onMounted(async () => {
   try {
-    // 1. Kampanyaları al
-    const response = await axios.get('http://localhost:8082/api/campaigns');
-    campaigns.value = response.data;
+    // Kullanıcı ID'sini SecureStorage'den al
+    const storedUserId = await SecureStoragePlugin.get({ key: 'userId' });
+    userId.value = Number(storedUserId.value);  // SecureStorage'den alınan değeri sayıya dönüştür
 
-    // 2. Kullanıcının beğendiği kampanyaları al
-    const userId = await SecureStoragePlugin.get({ key: 'userId' });
-    const userIdAsNumber = Number(userId.value);
-
-    // 3. Kullanıcının ID'sinin geçerli olup olmadığını kontrol et
-    if (isNaN(userIdAsNumber)) {
-      console.error("UserId geçersiz: ", userId.value);
+    // Eğer kullanıcı ID'si geçerli değilse, hata mesajı yazdır
+    if (isNaN(userId.value) || userId.value <= 0) {
+      console.error("Geçersiz UserId:", userId.value);
       return;
     }
 
-    // 4. Beğenilen kampanyaların ID'lerini al
-    const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userIdAsNumber}`);
-    const likedCampaigns = likedResponse.data;
-
-    // 5. Beğenilen kampanyaların ID'lerini hearts set'ine ekle
-    likedCampaigns.forEach((campaign: any) => {
-      hearts.value.add(campaign.campaignId);
-    });
-
-    console.log("Beğenilen kampanyalar:", hearts.value);
+    // API çağrıları yap
+    await fetchCampaigns();
   } catch (error) {
     console.error('Data could not be retrieved:', error);
   }
 });
 
+// Kampanyaları getiren fonksiyon
+const fetchCampaigns = async () => {
+  try {
+    let url = '';
+
+    if (selectedFilter.value === 'normal') {
+      // Normal kampanyalar
+      url = 'http://localhost:8082/api/campaigns';
+    } else if (selectedFilter.value === 'cards' && userId.value > 0) {
+      // Kullanıcıya özel kartlara göre kampanyalar
+      url = `http://localhost:8082/api/user-cards/${userId.value}/campaigns`;
+    }
+
+    // URL üzerinden kampanyaları al
+    const response = await axios.get(url);
+    campaigns.value = response.data;
+    console.log("API yanıtı:", response.data);  // Gelen veriyi tekrar kontrol et
+    console.log("Kampanyalar:", campaigns.value);
+
+    // Beğenilen kampanyaları kontrol et
+    const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userId.value}`);
+    const likedCampaigns = likedResponse.data;
+
+    // Beğenilen kampanyaların ID'lerini hearts set'ine ekle
+    likedCampaigns.forEach((campaign: any) => {
+      hearts.value.add(campaign.campaignId);
+    });
+
+    console.log("Beğenilen kampanyalar:", hearts.value);
+
+  } catch (error) {
+    console.error('Kampanyalar yüklenemedi:', error);
+  }
+};
+
+// Kampanya kartları için gerekli verilerin düzenlenmesi
 const cardIdMap = {
   1: "Axess",
   2: "CardFinans",
@@ -157,11 +192,8 @@ const isHearted = (campaignId: number) => hearts.value.has(campaignId);
 
 // Beğenme ikonunu toggle et ve beğenilen kampanyayı kaydet/sil
 const toggleHeart = async (campaignId: number) => {
-  const userId = await SecureStoragePlugin.get({ key: 'userId' });
-  const userIdAsNumber = Number(userId.value);
-
-  if (isNaN(userIdAsNumber)) {
-    console.error("UserId dönüşümü geçersiz: ", userId.value);
+  if (userId.value === 0) {
+    console.error("Geçerli bir kullanıcı bulunamadı.");
     return;
   }
 
@@ -169,13 +201,13 @@ const toggleHeart = async (campaignId: number) => {
     if (hearts.value.has(campaignId)) {
       // Kampanya beğenildi, kaldırılıyor
       hearts.value.delete(campaignId);
-      await axios.delete(`http://localhost:8082/api/likedCampaigns/${userIdAsNumber}/${campaignId}`);
+      await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
       console.log('Campaign unliked successfully');
     } else {
       // Kampanya beğenilmemiş, ekleniyor
       hearts.value.add(campaignId);
       await axios.post('http://localhost:8082/api/likedCampaigns', {
-        userId: userIdAsNumber,
+        userId: userId.value,
         campaignId: campaignId
       });
       console.log('Campaign liked successfully');
@@ -184,7 +216,16 @@ const toggleHeart = async (campaignId: number) => {
     console.error('Error with liking/unliking campaign:', error);
   }
 };
+
+// Filtreyi uygula
+const applyFilter = () => {
+  fetchCampaigns();
+};
 </script>
+
+
+
+
 
 <style scoped>
 .title {
@@ -278,6 +319,29 @@ const toggleHeart = async (campaignId: number) => {
   font-weight: bold;
   text-decoration: none;
 }
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 16px;
+  margin-top: 10px;
+}
+
+.filter-bar label {
+  margin-right: 8px;
+  font-size: 14px;
+  color: black;
+}
+
+.filter-bar select {
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
 
 .under-container {
   display: flex;
