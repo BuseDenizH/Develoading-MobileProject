@@ -19,7 +19,7 @@
           <ion-icon :icon="cardOutline" />
           <ion-label>Kartlarım</ion-label>
         </a>
-        <a href="/tabs/tab1" class="page-option">
+        <a @click.prevent="goToFavoriler" class="page-option">
           <ion-icon :icon="heartOutline" />
           <ion-label>Favoriler</ion-label>
         </a>
@@ -62,6 +62,9 @@ const goToAyarlarPopup = () => {
   router.push('/ayarlarpopup');
 };
 
+const goToFavoriler = () => {
+  router.push('/tabs/tab7');
+};
 
 // Router instance
 const router = useRouter();

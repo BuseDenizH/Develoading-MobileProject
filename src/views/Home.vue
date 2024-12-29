@@ -138,8 +138,6 @@ watch(campaigns, async () => {
 const getCardName = async (cardId: number) => {
   try {
     const response = await axios.get(`http://localhost:8082/api/card-name/${cardId}`);
-    console.log(response.data);
-    console.log("card");
     return response.data;
   } catch (error) {
     console.error('Kart adı alınamadı:', error);
@@ -150,8 +148,6 @@ const getCardName = async (cardId: number) => {
 const getCompanyName = async (companyId: number) => {
   try {
     const response = await axios.get(`http://localhost:8082/api/company-name/${companyId}`);
-    console.log(response.data);
-    console.log("company");
     return response.data;
   } catch (error) {
     console.error('Şirket adı alınamadı:', error);

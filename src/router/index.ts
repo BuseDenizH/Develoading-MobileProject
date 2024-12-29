@@ -90,6 +90,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'FirmsPopPage',
         component: () => import('@/views/FirmsPopPage.vue'),
         props: true
+      },
+      {
+        path: 'tab7',
+        name: 'FavorilerPopPage',
+        component: () => import('@/views/FavorilerPopPage.vue')
       }
     ]
   }
