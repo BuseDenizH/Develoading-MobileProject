@@ -52,7 +52,16 @@ public class CampaignController {
         return new ResponseEntity<>(campaigns, HttpStatus.OK);
     }
 
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Void> likeCampaign(@PathVariable Integer id) {
+        campaignService.incrementLike(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-
+    @PostMapping("/{id}/unlike")
+    public ResponseEntity<Void> unlikeCampaign(@PathVariable Integer id) {
+        campaignService.decrementLike(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }

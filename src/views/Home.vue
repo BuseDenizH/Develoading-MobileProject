@@ -94,7 +94,10 @@ import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline,
 import { ref, onMounted } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
+import { useRouter } from 'vue-router'; // useRouter'ı import et
 
+
+const router = useRouter(); // useRouter ile router'ı alıyoruz
 const campaigns = ref<any[]>([]); // Kampanyalar listesi
 const hearts = ref<Set<number>>(new Set());
 const userId = ref<number>(0);  // Kullanıcı ID'si başlangıçta 0
@@ -119,6 +122,10 @@ onMounted(async () => {
     console.error('Data could not be retrieved:', error);
   }
 });
+
+
+
+
 
 // Kampanyaları getiren fonksiyon
 const fetchCampaigns = async () => {
@@ -201,15 +208,21 @@ const toggleHeart = async (campaignId: number) => {
     if (hearts.value.has(campaignId)) {
       // Kampanya beğenildi, kaldırılıyor
       hearts.value.delete(campaignId);
+
+      // Beğeni kaldırma API çağrısı
       await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
+      await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`); // Beğeni sayısını azalt
       console.log('Campaign unliked successfully');
     } else {
       // Kampanya beğenilmemiş, ekleniyor
       hearts.value.add(campaignId);
+
+      // Beğeni ekleme API çağrısı
       await axios.post('http://localhost:8082/api/likedCampaigns', {
         userId: userId.value,
         campaignId: campaignId
       });
+      await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`); // Beğeni sayısını artır
       console.log('Campaign liked successfully');
     }
   } catch (error) {
@@ -217,14 +230,23 @@ const toggleHeart = async (campaignId: number) => {
   }
 };
 
+// Home.vue içinde
+const updateLikeCount = (campaignId, newLikeCount) => {
+  // Kampanya beğenildi veya beğenmeden çıkarıldıktan sonra
+  router.push({
+    path: `/campaign/${campaignId}`,
+    query: { likeCount: newLikeCount } // Yeni likeCount değerini query olarak gönderiyoruz
+  });
+};
+
+
+
+
 // Filtreyi uygula
 const applyFilter = () => {
   fetchCampaigns();
 };
 </script>
-
-
-
 
 
 <style scoped>

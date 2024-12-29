@@ -32,10 +32,7 @@
           </ion-row>
           <ion-row>
             <ion-col>
-              <ion-icon :icon="bookmark" /> {{ item.bookmarks }}18 kişi kullandı
-            </ion-col>
-            <ion-col>
-              <ion-icon :icon="heart" /> {{ item.hearts }}27 kişi beğendi
+              <ion-icon :icon="heart" /> {{ item.likeCount }} kişi beğendi
             </ion-col>
           </ion-row>
           <ion-row>
@@ -67,17 +64,17 @@
         </div>
       </div>
       <div v-else>
-        <p>Detay bulunamadı.</p>
+        <p>Yükleniyor...</p>
       </div>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { IonPage, IonHeader, IonToolbar, IonContent, IonButton, IonIcon, IonRow, IonCol } from '@ionic/vue';
-import { calendarClear, hourglass, bookmark, heart, shareSocial, arrowBack } from 'ionicons/icons';
+import { calendarClear, hourglass, heart, shareSocial, arrowBack } from 'ionicons/icons';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 import axios from 'axios';
@@ -87,6 +84,7 @@ const router = useRouter();
 const item = ref(null);
 const isUsed = ref(false); // Button status
 
+// User ID al
 const getUserId = async () => {
   try {
     const result = await SecureStoragePlugin.get({ key: 'userId' });
@@ -97,16 +95,28 @@ const getUserId = async () => {
   }
 };
 
-
-//kampanya detayı al 
-onMounted(async () => {
+// Kampanya detayı al
+const fetchCampaignDetails = async () => {
   const { id } = route.params;
   try {
-    const response = await axios.get(`http://18.153.153.139:8082/api/campaigns/${id}`);
+    const response = await axios.get(`http://localhost:8082/api/campaigns/${id}`);
     item.value = response.data;
+    console.log("API yanıtı:", response.data);  // Gelen veriyi tekrar kontrol et
+    console.log("Kampanyalar:", item.value);
+    console.log(item.value.likeCount);
   } catch (error) {
     console.error('Detaylar alınamadı:', error);
   }
+};
+
+// İlk mount işlemi ve her sayfa geçişinde kampanya verisini yenile
+onMounted(() => {
+  fetchCampaignDetails();
+});
+
+// İzleme işlemi - kampanyayı izleyip yenileyebiliriz
+watch(route, async () => {
+  await fetchCampaignDetails();
 });
 
 const goBack = () => {
@@ -143,8 +153,6 @@ const markAsUsed = async () => {
     console.error('Kampanya kullanılamadı:', error);
   }
 };
-
-
 </script>
 
 <style>

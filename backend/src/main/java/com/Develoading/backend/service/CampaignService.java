@@ -3,6 +3,8 @@ package com.Develoading.backend.service;
 import com.Develoading.backend.model.Campaign;
 import com.Develoading.backend.repository.CampaignRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
@@ -36,5 +38,15 @@ public class CampaignService {
     // Kart ID'sine göre kampanyaları almak için metot
     public List<Campaign> getCampaignsByCardId(Integer cardId) {
         return campaignRepository.findByCardId(cardId);
+    }
+
+    @Transactional
+    public void incrementLike(Integer campaignId) {
+        campaignRepository.incrementLikeCount(campaignId);
+    }
+
+    @Transactional
+    public void decrementLike(Integer campaignId) {
+        campaignRepository.decrementLikeCount(campaignId);
     }
 }

@@ -41,6 +41,9 @@ public class Campaign {
     @Column(name = "db_status_id")
     private Integer dbStatusId;
 
+    @Column(name = "like_count")
+    private Integer likeCount;
+
     // Getters and Setters
 
     public Integer getId() {
@@ -130,4 +133,8 @@ public class Campaign {
     public void setDbStatusId(Integer dbStatusId) {
         this.dbStatusId = dbStatusId;
     }
+
+    public Integer getLikeCount() { return likeCount; }
+
+    public void setLikeCount(Integer likeCount) { this.likeCount = likeCount; }
 }
