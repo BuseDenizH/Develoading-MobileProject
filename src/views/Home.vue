@@ -95,6 +95,8 @@ const campaigns = ref<any[]>([]); // Kampanyalar listesi
 const hearts = ref<Set<number>>(new Set());
 const userId = ref<number>(0);  // Kullanıcı ID'si başlangıçta 0
 const selectedFilter = ref('normal'); // Filtreyi 'normal' olarak başlatıyoruz
+const isProcessing = ref(false); // İşlem kilidi için ref tanımlama
+
 
 // Kullanıcı ID'sini SecureStorage'den al ve ilgili API isteklerini yap
 onMounted(async () => {
@@ -202,35 +204,57 @@ const formatDate = (date: string) => date.split('T')[0];
 const isHearted = (campaignId: number) => hearts.value.has(campaignId);
 
 // Beğenme ikonunu toggle et ve beğenilen kampanyayı kaydet/sil
+// Script kısmının en üstünde, diğer ref tanımlamalarının yanına ekleyin:
+
+// toggleHeart fonksiyonunu bu şekilde güncelleyin:
 const toggleHeart = async (campaignId: number) => {
+  // Kullanıcı kontrolü
   if (userId.value === 0) {
     console.error("Geçerli bir kullanıcı bulunamadı.");
     return;
   }
 
+  // İşlem devam ediyorsa yeni işlemi engelle
+  if (isProcessing.value) {
+    console.log('İşlem devam ediyor, lütfen bekleyin...');
+    return;
+  }
+
+  isProcessing.value = true; // İşlemi kilitle
+
   try {
     if (hearts.value.has(campaignId)) {
-      // Kampanya beğenildi, kaldırılıyor
-      hearts.value.delete(campaignId);
+      // Unlike işlemi
+      const unlikeResponse = await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
 
-      // Beğeni kaldırma API çağrısı
-      await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
-      await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`); // Beğeni sayısını azalt
-      console.log('Campaign unliked successfully');
+      if (unlikeResponse.status === 200) {
+        hearts.value.delete(campaignId);
+        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`);
+        console.log('Campaign unliked successfully');
+      }
     } else {
-      // Kampanya beğenilmemiş, ekleniyor
-      hearts.value.add(campaignId);
-
-      // Beğeni ekleme API çağrısı
-      await axios.post('http://localhost:8082/api/likedCampaigns', {
+      // Like işlemi
+      const likeResponse = await axios.post('http://localhost:8082/api/likedCampaigns', {
         userId: userId.value,
         campaignId: campaignId
       });
-      await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`); // Beğeni sayısını artır
-      console.log('Campaign liked successfully');
+
+      if (likeResponse.status === 200) {
+        hearts.value.add(campaignId);
+        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`);
+        console.log('Campaign liked successfully');
+      }
     }
   } catch (error) {
     console.error('Error with liking/unliking campaign:', error);
+    // Hata durumunda hearts setini eski haline getir
+    if (hearts.value.has(campaignId)) {
+      hearts.value.delete(campaignId);
+    } else {
+      hearts.value.add(campaignId);
+    }
+  } finally {
+    isProcessing.value = false; // İşlem kilidini kaldır
   }
 };
 
