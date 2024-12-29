@@ -1,10 +1,11 @@
 package com.Develoading.backend.repository;
 
-import com.Develoading.backend.model.Company;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.Develoading.backend.model.Company;
 
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Integer> {

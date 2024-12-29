@@ -39,10 +39,8 @@
             <p><ion-icon aria-hidden="true" :icon="hourglassOutline" /> {{ formatDate(campaign?.endDate) }}</p>
           </div>
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ getMappedCardName(campaign?.cardId) }}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign?.companyId) }}
-            </p>
-
+            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ campaign.cardName }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ campaign.companyName }}</p>
           </div>
         </div>
       </div>
@@ -70,9 +68,8 @@
             <p><ion-icon aria-hidden="true" :icon="hourglassOutline" /> {{ formatDate(campaign?.endDate) }}</p>
           </div>
           <div class="inner-info">
-            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ getMappedCardName(campaign?.cardId) }}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign?.companyId) }}
-            </p>
+            <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ campaign.cardName }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ campaign.companyName }}</p>
           </div>
         </div>
       </div>
@@ -83,7 +80,7 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon } from '@ionic/vue';
 import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, heart } from 'ionicons/icons';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 import { useRouter } from 'vue-router'; // useRouter'ı import et
@@ -131,7 +128,36 @@ const shareContent = async (campaign: any) => {
   }
 };
 
+watch(campaigns, async () => {
+  campaigns.value.forEach(async (campaign) => {
+    campaign.cardName = await getCardName(campaign.cardId);
+    campaign.companyName = await getCompanyName(campaign.companyId);
+  });
+});
 
+const getCardName = async (cardId: number) => {
+  try {
+    const response = await axios.get(`http://localhost:8082/api/card-name/${cardId}`);
+    console.log(response.data);
+    console.log("card");
+    return response.data;
+  } catch (error) {
+    console.error('Kart adı alınamadı:', error);
+    return "Bilinmeyen Kart";
+  }
+};
+
+const getCompanyName = async (companyId: number) => {
+  try {
+    const response = await axios.get(`http://localhost:8082/api/company-name/${companyId}`);
+    console.log(response.data);
+    console.log("company");
+    return response.data;
+  } catch (error) {
+    console.error('Şirket adı alınamadı:', error);
+    return "Bilinmeyen Şirket";
+  }
+};
 
 // Kampanyaları getiren fonksiyon
 const fetchCampaigns = async () => {
@@ -166,35 +192,6 @@ const fetchCampaigns = async () => {
   } catch (error) {
     console.error('Kampanyalar yüklenemedi:', error);
   }
-};
-
-// Kampanya kartları için gerekli verilerin düzenlenmesi
-const cardIdMap = {
-  1: "Axess",
-  2: "CardFinans",
-  3: "Bonus",
-  4: "Maximum",
-  5: "World",
-  6: "Paraf",
-};
-
-const companyIdMap = {
-  1: "Akaryakıt",
-  2: "Giyim/Kozmetik",
-  3: "Elektronik",
-  4: "Yeme/İçme",
-  5: "Turizm/Seyahat",
-  6: "Telekomünikasyon",
-  7: "Araç Kiralama",
-};
-
-// ID'yi metne dönüştürme fonksiyonu
-const getMappedCardName = (cardId: number) => {
-  return cardIdMap[cardId] || "Bilinmeyen Kart";
-};
-
-const getMappedCompanyName = (companyId: number) => {
-  return companyIdMap[companyId] || "Bilinmeyen Şirket";
 };
 
 // Tarihi formatla
