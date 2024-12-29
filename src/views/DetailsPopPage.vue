@@ -76,17 +76,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonContent,
-  IonButton,
-  IonIcon,
-  IonRow,
-  IonCol,
-} from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonContent, IonButton, IonIcon, IonRow, IonCol } from '@ionic/vue';
 import { calendarClear, hourglass, bookmark, heart, shareSocial, arrowBack } from 'ionicons/icons';
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
+
 import axios from 'axios';
 
 const route = useRoute();
@@ -94,6 +87,18 @@ const router = useRouter();
 const item = ref(null);
 const isUsed = ref(false); // Button status
 
+const getUserId = async () => {
+  try {
+    const result = await SecureStoragePlugin.get({ key: 'userId' });
+    return Number(result.value); // Değeri sayıya dönüştürüp döndürün
+  } catch (error) {
+    console.error('UserId alınırken hata oluştu:', error);
+    return NaN; // Hata durumunda geçersiz bir değer döndür
+  }
+};
+
+
+//kampanya detayı al 
 onMounted(async () => {
   const { id } = route.params;
   try {
@@ -116,9 +121,30 @@ const formatDate = (dateString: string) => {
   return dateString?.split('T')[0] || '';
 };
 
-const markAsUsed = () => {
-  isUsed.value = true;
+// Kampanyayı kullanıldık olarak işaretleme
+const markAsUsed = async () => {
+  if (isUsed.value || !item.value) return;
+
+  try {
+    const userId = await getUserId();
+    if (isNaN(userId) || userId <= 0) {
+      console.error("Geçersiz UserId:", userId);
+      return;
+    }
+
+    const campaignId = item.value.id;
+    const response = await axios.post('http://localhost:8082/api/used-campaigns/use', null, {
+      params: { userId, campaignId },
+    });
+
+    console.log(response.data);
+    isUsed.value = true;
+  } catch (error) {
+    console.error('Kampanya kullanılamadı:', error);
+  }
 };
+
+
 </script>
 
 <style>
