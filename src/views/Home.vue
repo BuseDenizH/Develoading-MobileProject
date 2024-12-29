@@ -7,36 +7,31 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-     <ion-toolbar>
-  <ion-title class="title">En beğenilenler</ion-title>
-  <div class="filter-bar">
-    <label for="filter">filtre</label>
-    <select id="filter" v-model="selectedFilter" @change="applyFilter">
-      <option value="normal">Normal</option>
-      <option value="cards">Kartlarıma Göre</option>
-     
-    </select>
-  </div>
-  <hr class="line">
-</ion-toolbar>
+      <ion-toolbar>
+        <ion-title class="title">En beğenilenler</ion-title>
+        <div class="filter-bar">
+          <label for="filter">filtre</label>
+          <select id="filter" v-model="selectedFilter" @change="applyFilter">
+            <option value="normal">Normal</option>
+            <option value="cards">Kartlarıma Göre</option>
 
- <!-- Kampanyalar Listesi -->
+          </select>
+        </div>
+        <hr class="line">
+      </ion-toolbar>
+
+      <!-- Kampanyalar Listesi -->
       <div v-for="(campaign, index) in campaigns" :key="campaign.id" class="container">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" />
-            <ion-icon
-                id="heart"
-                :class="{ red: hearts.has(campaign.id) }"
-                aria-hidden="true"
-                :icon="heart"
-                @click="toggleHeart(campaign.id)"
-            />
+            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
+            <ion-icon id="heart" :class="{ red: hearts.has(campaign.id) }" aria-hidden="true" :icon="heart"
+              @click="toggleHeart(campaign.id)" />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-                     class="card-link">{{ campaign.detail }}</router-link>
+          class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -45,7 +40,8 @@
           </div>
           <div class="inner-info">
             <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ getMappedCardName(campaign?.cardId) }}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign?.companyId) }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign?.companyId) }}
+            </p>
 
           </div>
         </div>
@@ -60,18 +56,13 @@
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" />
-            <ion-icon
-                id="heart"
-                :class="{ red: hearts.has(campaign.id) }"
-                aria-hidden="true"
-                :icon="heart"
-                @click="toggleHeart(campaign.id)"
-            />
+            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
+            <ion-icon id="heart" :class="{ red: hearts.has(campaign.id) }" aria-hidden="true" :icon="heart"
+              @click="toggleHeart(campaign.id)" />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-                     class="card-link">{{ campaign.detail }}</router-link>
+          class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -80,7 +71,8 @@
           </div>
           <div class="inner-info">
             <p><ion-icon aria-hidden="true" :icon="cardOutline" /> {{ getMappedCardName(campaign?.cardId) }}</p>
-            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign?.companyId) }}</p>
+            <p><ion-icon aria-hidden="true" :icon="storefrontOutline" /> {{ getMappedCompanyName(campaign?.companyId) }}
+            </p>
           </div>
         </div>
       </div>
@@ -95,6 +87,7 @@ import { ref, onMounted } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 import { useRouter } from 'vue-router'; // useRouter'ı import et
+import { Share } from '@capacitor/share';
 
 
 const router = useRouter(); // useRouter ile router'ı alıyoruz
@@ -123,7 +116,18 @@ onMounted(async () => {
   }
 });
 
-
+const shareContent = async (campaign: any) => {
+  try {
+    await Share.share({
+      title: 'Kampanya Detayı',
+      text: campaign.detail,  // Kampanya açıklaması
+      url: campaign.url,      // Kampanya URL'si
+    });
+    console.log('Paylaşım başarılı');
+  } catch (error) {
+    console.error('Paylaşım hatası:', error);
+  }
+};
 
 
 

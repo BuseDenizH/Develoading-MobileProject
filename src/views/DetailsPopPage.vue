@@ -37,7 +37,8 @@
           </ion-row>
           <ion-row>
             <ion-col>
-              <ion-icon :icon="shareSocial" /> Paylaş
+              <ion-icon :icon="shareSocial" />
+              <ion-button @click="shareContent">Paylaş</ion-button>
             </ion-col>
           </ion-row>
         </div>
@@ -78,6 +79,7 @@ import { calendarClear, hourglass, heart, shareSocial, arrowBack } from 'ionicon
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 import axios from 'axios';
+import { Share } from '@capacitor/share';
 
 const route = useRoute();
 const router = useRouter();
@@ -106,6 +108,19 @@ const fetchCampaignDetails = async () => {
     console.log(item.value.likeCount);
   } catch (error) {
     console.error('Detaylar alınamadı:', error);
+  }
+};
+
+const shareContent = async () => {
+  try {
+    await Share.share({
+      title: 'Kampanya Detayı',
+      text: 'Bu kampanyayı inceleyin!',
+      url: item.value.url,
+    });
+    console.log('Paylaşım başarılı');
+  } catch (error) {
+    console.error('Paylaşım hatası:', error);
   }
 };
 
