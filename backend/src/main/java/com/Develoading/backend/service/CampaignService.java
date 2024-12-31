@@ -30,6 +30,7 @@ public class CampaignService {
                 .orElseThrow(() -> new RuntimeException("Campaign not found with ID: " + id));
     }
 
+
     public Campaign createCampaign(Campaign campaign) {
         campaign.setDbCreatedAt(java.time.LocalDateTime.now());
         return campaignRepository.save(campaign);
@@ -49,4 +50,6 @@ public class CampaignService {
     public void decrementLike(Integer campaignId) {
         campaignRepository.decrementLikeCount(campaignId);
     }
+
+
 }

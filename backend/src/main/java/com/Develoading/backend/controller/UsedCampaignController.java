@@ -1,5 +1,7 @@
 package com.Develoading.backend.controller;
 
+import com.Develoading.backend.model.Campaign;
+import com.Develoading.backend.service.CampaignService;
 import com.Develoading.backend.model.UsedCampaign;
 import com.Develoading.backend.service.UsedCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/used-campaigns")
@@ -16,6 +19,9 @@ public class UsedCampaignController {
 
     @Autowired
     private UsedCampaignService usedCampaignService;
+
+    @Autowired
+    private CampaignService campaignService;
 
     @PostMapping("/use")
     public ResponseEntity<String> markCampaignAsUsed(@RequestParam Integer userId, @RequestParam Integer campaignId) {
@@ -37,6 +43,77 @@ public class UsedCampaignController {
                     .body("Error while saving used campaign: " + e.getMessage());
         }
     }
+//kullancıın kullandıgı kampanyanın idsini gönderirir
+@GetMapping("/campaigns/{userId}")
+public ResponseEntity<List<Integer>> getCampaignIdsByUser(@PathVariable Integer userId) {
+    // Kullanıcının kampanyalarını alıyoruz
+    List<UsedCampaign> usedCampaigns = usedCampaignService.getUsedCampaignsByUserId(userId);
+
+    // Eğer hiç kampanya yoksa 204 No Content döndürüyoruz
+    if (usedCampaigns.isEmpty()) {
+        return ResponseEntity.noContent().build();
+    }
+
+    // CampaignId'leri almak için dönüşüm yapıyoruz
+    List<Integer> campaignIds = usedCampaigns.stream()
+            .map(UsedCampaign::getCampaignId)  // Sadece campaignId'yi alıyoruz
+            .collect(Collectors.toList());
+
+    // campaignId'leri döndürüyoruz
+    return ResponseEntity.ok(campaignIds);
+}
+
+
+
+    // UsedCampaignController'da yeni bir endpoint
+    @GetMapping("/campaign-details/{userId}")
+    public ResponseEntity<List<Map<String, Object>>> getCampaignDetailsByUser(@PathVariable Integer userId) {
+        // Kullanıcının kullandığı kampanyaları alıyoruz
+        List<UsedCampaign> usedCampaigns = usedCampaignService.getUsedCampaignsByUserId(userId);
+
+        // Eğer hiç kampanya yoksa 204 No Content döndürüyoruz
+        if (usedCampaigns.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        // Kullanıcının kullandığı kampanya ID'lerini alıyoruz
+        List<Integer> campaignIds = usedCampaigns.stream()
+                .map(UsedCampaign::getCampaignId)
+                .collect(Collectors.toList());
+
+        // Kampanya detaylarını tutmak için bir liste oluşturuyoruz
+        List<Map<String, Object>> campaignDetails = new ArrayList<>();
+
+        // Her kampanya ID'si için CampaignService'den kampanya detaylarını alıyoruz
+        for (Integer campaignId : campaignIds) {
+            try {
+                // CampaignController'dan kampanya detayını alıyoruz
+                // Burada campaignService getCampaignById() veya benzeri bir metot çağrısı yapılabilir
+                Campaign campaign = campaignService.getCampaignById(campaignId);
+
+                // Kampanya detaylarını map şeklinde ekliyoruz
+                Map<String, Object> campaignDetail = new HashMap<>();
+                campaignDetail.put("id", campaign.getId());
+                campaignDetail.put("title", campaign.getTitle());
+                campaignDetail.put("detail", campaign.getDetail());
+                campaignDetail.put("url", campaign.getUrl());
+                campaignDetail.put("image", campaign.getImage());
+                campaignDetail.put("beginDate", campaign.getBeginDate());
+                campaignDetail.put("endDate", campaign.getEndDate());
+
+                campaignDetails.add(campaignDetail);
+            } catch (Exception e) {
+                // Hata durumunda kullanıcıya uygun bir mesaj veriyoruz
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Collections.singletonList(Map.of("error", "Error fetching campaign details for campaignId: " + campaignId)));
+            }
+        }
+
+        // Kampanya detaylarını döndürüyoruz
+        return ResponseEntity.ok(campaignDetails);
+    }
+
+
 
 
     // Kullanıcıya ait kullanılan kampanyaları getirme

@@ -58,6 +58,10 @@ const goToProfilePopup = () => {
   router.push('/profilpopup');
 };
 
+const goToKullanilanlar = () => {
+  router.push('/tabs/tab8');
+};
+
 const goToAyarlarPopup = () => {
   router.push('/ayarlarpopup');
 };

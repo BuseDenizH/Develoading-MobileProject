@@ -95,7 +95,13 @@ const routes: Array<RouteRecordRaw> = [
         path: 'tab7',
         name: 'FavorilerPopPage',
         component: () => import('@/views/FavorilerPopPage.vue')
+      },
+      {
+        path: 'tab8',
+        name: 'UsedCampaignPopPage',
+        component: () => import('@/views/UsedCampaignPopPage.vue')
       }
+
     ]
   }
 ];
