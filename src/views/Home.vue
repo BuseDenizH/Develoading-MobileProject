@@ -26,8 +26,13 @@
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
             <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
-            <ion-icon id="heart" :class="{ red: hearts.has(campaign.id) }" aria-hidden="true" :icon="heart"
-              @click="toggleHeart(campaign.id)" />
+            <ion-icon
+                id="heart"
+                :class="{ red: heartStore.hearts.has(campaign.id) }"
+                aria-hidden="true"
+                :icon="heart"
+                @click="toggleHeart(campaign.id)"
+            />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
@@ -85,6 +90,7 @@ import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 import { useRouter } from 'vue-router'; // useRouter'ı import et
 import { Share } from '@capacitor/share';
+import { useHeartStore } from '@/stores/heartStore'
 
 
 const router = useRouter(); // useRouter ile router'ı alıyoruz
@@ -93,6 +99,7 @@ const hearts = ref<Set<number>>(new Set());
 const userId = ref<number>(0);  // Kullanıcı ID'si başlangıçta 0
 const selectedFilter = ref('normal'); // Filtreyi 'normal' olarak başlatıyoruz
 const isProcessing = ref(false); // İşlem kilidi için ref tanımlama
+const heartStore = useHeartStore()
 
 
 // Kullanıcı ID'sini SecureStorage'den al ve ilgili API isteklerini yap
@@ -161,29 +168,20 @@ const fetchCampaigns = async () => {
     let url = '';
 
     if (selectedFilter.value === 'normal') {
-      // Normal kampanyalar
       url = 'http://localhost:8082/api/campaigns';
     } else if (selectedFilter.value === 'cards' && userId.value > 0) {
-      // Kullanıcıya özel kartlara göre kampanyalar
       url = `http://localhost:8082/api/user-cards/${userId.value}/campaigns`;
     }
 
-    // URL üzerinden kampanyaları al
     const response = await axios.get(url);
     campaigns.value = response.data;
-    console.log("API yanıtı:", response.data);  // Gelen veriyi tekrar kontrol et
-    console.log("Kampanyalar:", campaigns.value);
 
-    // Beğenilen kampanyaları kontrol et
     const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userId.value}`);
     const likedCampaigns = likedResponse.data;
 
-    // Beğenilen kampanyaların ID'lerini hearts set'ine ekle
-    likedCampaigns.forEach((campaign: any) => {
-      hearts.value.add(campaign.campaignId);
-    });
-
-    console.log("Beğenilen kampanyalar:", hearts.value);
+    // Store'u güncelle
+    const likedIds = likedCampaigns.map((campaign: any) => campaign.campaignId);
+    heartStore.setInitialHearts(likedIds);
 
   } catch (error) {
     console.error('Kampanyalar yüklenemedi:', error);
@@ -201,53 +199,41 @@ const isHearted = (campaignId: number) => hearts.value.has(campaignId);
 
 // toggleHeart fonksiyonunu bu şekilde güncelleyin:
 const toggleHeart = async (campaignId: number) => {
-  // Kullanıcı kontrolü
   if (userId.value === 0) {
     console.error("Geçerli bir kullanıcı bulunamadı.");
     return;
   }
 
-  // İşlem devam ediyorsa yeni işlemi engelle
   if (isProcessing.value) {
     console.log('İşlem devam ediyor, lütfen bekleyin...');
     return;
   }
 
-  isProcessing.value = true; // İşlemi kilitle
+  isProcessing.value = true;
 
   try {
-    if (hearts.value.has(campaignId)) {
-      // Unlike işlemi
+    if (heartStore.hearts.has(campaignId)) {
       const unlikeResponse = await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
 
       if (unlikeResponse.status === 200) {
-        hearts.value.delete(campaignId);
+        heartStore.updateHearts(campaignId, false);
         await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`);
-        console.log('Campaign unliked successfully');
       }
     } else {
-      // Like işlemi
       const likeResponse = await axios.post('http://localhost:8082/api/likedCampaigns', {
         userId: userId.value,
         campaignId: campaignId
       });
 
       if (likeResponse.status === 200) {
-        hearts.value.add(campaignId);
+        heartStore.updateHearts(campaignId, true);
         await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`);
-        console.log('Campaign liked successfully');
       }
     }
   } catch (error) {
     console.error('Error with liking/unliking campaign:', error);
-    // Hata durumunda hearts setini eski haline getir
-    if (hearts.value.has(campaignId)) {
-      hearts.value.delete(campaignId);
-    } else {
-      hearts.value.add(campaignId);
-    }
   } finally {
-    isProcessing.value = false; // İşlem kilidini kaldır
+    isProcessing.value = false;
   }
 };
 

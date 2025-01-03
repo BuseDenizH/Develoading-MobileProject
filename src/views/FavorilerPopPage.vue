@@ -19,8 +19,13 @@
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
             <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
-            <ion-icon id="heart" :class="{ red: hearts.has(campaign.id) }" aria-hidden="true" :icon="heart"
-                      @click="toggleHeart(campaign.id)" />
+            <ion-icon
+                id="heart"
+                :class="{ red: heartStore.hearts.has(campaign.id) }"
+                aria-hidden="true"
+                :icon="heart"
+                @click="toggleHeart(campaign.id)"
+            />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
@@ -58,6 +63,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { Share } from '@capacitor/share';
 import { onIonViewWillEnter } from '@ionic/vue';
+import { useHeartStore } from '@/stores/heartStore'
 
 
 const router = useRouter();
@@ -65,6 +71,8 @@ const userId = ref<number>(0);
 const hearts = ref<Set<number>>(new Set());
 const likedCampaigns = ref<any[]>([]);
 const isProcessing = ref(false);
+const heartStore = useHeartStore()
+
 
 // Sayfa yüklendiğinde
 onIonViewWillEnter(async () => {
@@ -83,26 +91,19 @@ onIonViewWillEnter(async () => {
 // Beğenilen kampanyaları getir
 const fetchLikedCampaigns = async () => {
   try {
-    // Önce beğenilen kampanya ID'lerini al
     const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userId.value}`);
     const likedCampaignIds = likedResponse.data.map((item: any) => item.campaignId);
 
-    // Hearts set'ini temizle ve yeni beğenileri ekle
-    hearts.value.clear();
-    likedCampaignIds.forEach((id: number) => {
-      hearts.value.add(id);
-    });
+    // Store'u güncelle
+    heartStore.setInitialHearts(likedCampaignIds);
 
-    // Sonra bu ID'lere ait kampanya detaylarını al
     const campaignsResponse = await axios.get('http://localhost:8082/api/campaigns');
     const allCampaigns = campaignsResponse.data;
 
-    // Sadece beğenilen kampanyaları filtrele
     likedCampaigns.value = allCampaigns.filter((campaign: any) =>
         likedCampaignIds.includes(campaign.id)
     );
 
-    console.log("Beğenilen kampanyalar:", likedCampaigns.value);
   } catch (error) {
     console.error('Beğenilen kampanyalar getirilemedi:', error);
   }
@@ -136,38 +137,27 @@ const toggleHeart = async (campaignId: number) => {
   isProcessing.value = true;
 
   try {
-    if (hearts.value.has(campaignId)) {
-      // Unlike işlemi
+    if (heartStore.hearts.has(campaignId)) {
       const unlikeResponse = await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
 
       if (unlikeResponse.status === 200) {
-        hearts.value.delete(campaignId);
+        heartStore.updateHearts(campaignId, false);
         await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`);
-        // Kampanyayı listeden kaldır
         likedCampaigns.value = likedCampaigns.value.filter(camp => camp.id !== campaignId);
-        console.log('Campaign unliked successfully');
       }
     } else {
-      // Like işlemi
       const likeResponse = await axios.post('http://localhost:8082/api/likedCampaigns', {
         userId: userId.value,
         campaignId: campaignId
       });
 
       if (likeResponse.status === 200) {
-        hearts.value.add(campaignId);
+        heartStore.updateHearts(campaignId, true);
         await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`);
-        console.log('Campaign liked successfully');
       }
     }
   } catch (error) {
     console.error('Error with liking/unliking campaign:', error);
-    // Hata durumunda hearts setini eski haline getir
-    if (hearts.value.has(campaignId)) {
-      hearts.value.delete(campaignId);
-    } else {
-      hearts.value.add(campaignId);
-    }
   } finally {
     isProcessing.value = false;
   }
