@@ -21,8 +21,8 @@
       </ion-toolbar>
 
       <!-- Kampanyalar Listesi -->
-      <div v-for="(campaign, index) in campaigns" :key="campaign.id" class="container">
-        <div class="images-container">
+      <div v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container">
+      <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
             <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
@@ -55,17 +55,22 @@
         <hr class="line">
       </ion-toolbar>
 
-      <div v-for="(campaign, index) in campaigns" :key="campaign.id" class="container">
+      <div v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
             <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
-            <ion-icon id="heart" :class="{ red: hearts.has(campaign.id) }" aria-hidden="true" :icon="heart"
-              @click="toggleHeart(campaign.id)" />
+            <ion-icon
+                id="heart"
+                :class="{ red: heartStore.hearts.has(campaign.id) }"
+                aria-hidden="true"
+                :icon="heart"
+                @click="toggleHeart(campaign.id)"
+            />
           </div>
         </div>
         <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-          class="card-link">{{ campaign.detail }}</router-link>
+                     class="card-link">{{ campaign.detail }}</router-link>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -85,13 +90,13 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon } from '@ionic/vue';
 import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, heart } from 'ionicons/icons';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, computed  } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 import { useRouter } from 'vue-router'; // useRouter'ı import et
 import { Share } from '@capacitor/share';
 import { useHeartStore } from '@/stores/heartStore'
-
+import { useCardStore } from '@/stores/cardStore';
 
 const router = useRouter(); // useRouter ile router'ı alıyoruz
 const campaigns = ref<any[]>([]); // Kampanyalar listesi
@@ -100,23 +105,22 @@ const userId = ref<number>(0);  // Kullanıcı ID'si başlangıçta 0
 const selectedFilter = ref('normal'); // Filtreyi 'normal' olarak başlatıyoruz
 const isProcessing = ref(false); // İşlem kilidi için ref tanımlama
 const heartStore = useHeartStore()
-
+const cardStore = useCardStore();
 
 // Kullanıcı ID'sini SecureStorage'den al ve ilgili API isteklerini yap
 onMounted(async () => {
   try {
-    // Kullanıcı ID'sini SecureStorage'den al
     const storedUserId = await SecureStoragePlugin.get({ key: 'userId' });
-    userId.value = Number(storedUserId.value);  // SecureStorage'den alınan değeri sayıya dönüştür
+    userId.value = Number(storedUserId.value);
 
-    // Eğer kullanıcı ID'si geçerli değilse, hata mesajı yazdır
-    if (isNaN(userId.value) || userId.value <= 0) {
-      console.error("Geçersiz UserId:", userId.value);
-      return;
+    if (userId.value > 0) {
+      // Kart ve şirket bilgilerini önbelleğe al
+      await Promise.all([
+        cardStore.fetchCardNames(),
+        cardStore.fetchCompanyNames()
+      ]);
+      await fetchCampaigns();
     }
-
-    // API çağrıları yap
-    await fetchCampaigns();
   } catch (error) {
     console.error('Data could not be retrieved:', error);
   }
@@ -135,11 +139,13 @@ const shareContent = async (campaign: any) => {
   }
 };
 
-watch(campaigns, async () => {
-  campaigns.value.forEach(async (campaign) => {
-    campaign.cardName = await getCardName(campaign.cardId);
-    campaign.companyName = await getCompanyName(campaign.companyId);
-  });
+// watch kısmını kaldırıp yerine computed ekleyin
+const campaignsWithDetails = computed(() => {
+  return campaigns.value.map(campaign => ({
+    ...campaign,
+    cardName: cardStore.getCardName(campaign.cardId),
+    companyName: cardStore.getCompanyName(campaign.companyId)
+  }));
 });
 
 const getCardName = async (cardId: number) => {

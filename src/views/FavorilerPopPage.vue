@@ -13,8 +13,7 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <!-- Beğenilen Kampanyalar Listesi -->
-      <div v-for="campaign in likedCampaigns" :key="campaign.id" class="container">
+      <div v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
@@ -57,14 +56,14 @@ import {
   shareSocialSharp,
   heart
 } from 'ionicons/icons';
-import { ref, watch } from 'vue';
+import { ref, computed  } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { Share } from '@capacitor/share';
 import { onIonViewWillEnter } from '@ionic/vue';
 import { useHeartStore } from '@/stores/heartStore'
-
+import { useCardStore } from '@/stores/cardStore';
 
 const router = useRouter();
 const userId = ref<number>(0);
@@ -72,7 +71,17 @@ const hearts = ref<Set<number>>(new Set());
 const likedCampaigns = ref<any[]>([]);
 const isProcessing = ref(false);
 const heartStore = useHeartStore()
+const cardStore = useCardStore();
 
+
+// Kampanyaları computed property ile birleştir
+const campaignsWithDetails = computed(() => {
+  return likedCampaigns.value.map(campaign => ({
+    ...campaign,
+    cardName: cardStore.getCardName(campaign.cardId),
+    companyName: cardStore.getCompanyName(campaign.companyId)
+  }));
+});
 
 // Sayfa yüklendiğinde
 onIonViewWillEnter(async () => {
@@ -81,6 +90,11 @@ onIonViewWillEnter(async () => {
     userId.value = Number(storedUserId.value);
 
     if (userId.value > 0) {
+      // Kart ve şirket bilgilerini önbelleğe al
+      await Promise.all([
+        cardStore.fetchCardNames(),
+        cardStore.fetchCompanyNames()
+      ]);
       await fetchLikedCampaigns();
     }
   } catch (error) {
@@ -160,37 +174,6 @@ const toggleHeart = async (campaignId: number) => {
     console.error('Error with liking/unliking campaign:', error);
   } finally {
     isProcessing.value = false;
-  }
-};
-
-watch(likedCampaigns, async () => {
-  likedCampaigns.value.forEach(async (campaign) => {
-    campaign.cardName = await getCardName(campaign.cardId);
-    campaign.companyName = await getCompanyName(campaign.companyId);
-  });
-});
-
-const getCardName = async (cardId: number) => {
-  try {
-    const response = await axios.get(`http://localhost:8082/api/card-name/${cardId}`);
-    console.log(response.data);
-    console.log("card");
-    return response.data;
-  } catch (error) {
-    console.error('Kart adı alınamadı:', error);
-    return "Bilinmeyen Kart";
-  }
-};
-
-const getCompanyName = async (companyId: number) => {
-  try {
-    const response = await axios.get(`http://localhost:8082/api/company-name/${companyId}`);
-    console.log(response.data);
-    console.log("company");
-    return response.data;
-  } catch (error) {
-    console.error('Şirket adı alınamadı:', error);
-    return "Bilinmeyen Şirket";
   }
 };
 
