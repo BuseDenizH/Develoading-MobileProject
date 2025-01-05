@@ -31,4 +31,10 @@ public class UsedCampaignService {
     public void removeUsedCampaign(Integer userId, Integer campaignId) {
         usedCampaignRepository.deleteByUserIdAndCampaignId(userId, campaignId);
     }
+
+    public boolean isCampaignUsedByUser(Integer userId, Integer campaignId) {
+        // Kullanıcı ve kampanya kombinasyonuyla UsedCampaign var mı kontrol ediyoruz
+        return usedCampaignRepository.existsByUserIdAndCampaignId(userId, campaignId);
+    }
+
 }

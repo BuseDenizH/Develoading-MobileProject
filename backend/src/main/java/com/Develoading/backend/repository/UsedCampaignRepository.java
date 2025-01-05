@@ -11,6 +11,7 @@ public interface UsedCampaignRepository extends JpaRepository<UsedCampaign, Inte
     List<UsedCampaign> findByUserId(Integer userId);
     List<UsedCampaign> findByCampaignId(Integer campaignId);
     void deleteByUserIdAndCampaignId(Integer userId, Integer campaignId);
+    boolean existsByUserIdAndCampaignId(Integer userId, Integer campaignId);
 
 
 }

@@ -29,6 +29,16 @@ public class UsedCampaignController {
             return ResponseEntity.badRequest().body("User ID and Campaign ID cannot be null.");
         }
 
+        // Kullanıcının zaten bu kampanyayı kullanıp kullanmadığını kontrol ediyoruz
+        boolean isCampaignAlreadyUsed = usedCampaignService.isCampaignUsedByUser(userId, campaignId);
+
+        if (isCampaignAlreadyUsed) {
+            // Kampanya zaten kullanılmış, hata mesajı dönüyoruz
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("This campaign has already been used by the user.");
+        }
+
+        // Kampanya kullanılmamış, yeni bir UsedCampaign kaydı oluşturuyoruz
         UsedCampaign usedCampaign = new UsedCampaign();
         usedCampaign.setUserId(userId);
         usedCampaign.setCampaignId(campaignId);
@@ -43,6 +53,7 @@ public class UsedCampaignController {
                     .body("Error while saving used campaign: " + e.getMessage());
         }
     }
+
 //kullancıın kullandıgı kampanyanın idsini gönderirir
 @GetMapping("/campaigns/{userId}")
 public ResponseEntity<List<Integer>> getCampaignIdsByUser(@PathVariable Integer userId) {
@@ -64,8 +75,6 @@ public ResponseEntity<List<Integer>> getCampaignIdsByUser(@PathVariable Integer 
 }
 
 
-
-    // UsedCampaignController'da yeni bir endpoint
     @GetMapping("/campaign-details/{userId}")
     public ResponseEntity<List<Map<String, Object>>> getCampaignDetailsByUser(@PathVariable Integer userId) {
         // Kullanıcının kullandığı kampanyaları alıyoruz
@@ -86,9 +95,14 @@ public ResponseEntity<List<Integer>> getCampaignIdsByUser(@PathVariable Integer 
 
         // Her kampanya ID'si için CampaignService'den kampanya detaylarını alıyoruz
         for (Integer campaignId : campaignIds) {
+            // Kampanya zaten kullanıldı mı kontrol ediyoruz
+            // Eğer kullanıcı bu kampanyayı daha önce kullanmışsa, bu kampanyayı tekrar almayı engelliyoruz
+            if (campaignDetails.stream().anyMatch(c -> c.get("id").equals(campaignId))) {
+                continue; // Eğer kampanya zaten listede varsa, geçiyoruz
+            }
+
             try {
                 // CampaignController'dan kampanya detayını alıyoruz
-                // Burada campaignService getCampaignById() veya benzeri bir metot çağrısı yapılabilir
                 Campaign campaign = campaignService.getCampaignById(campaignId);
 
                 // Kampanya detaylarını map şeklinde ekliyoruz
@@ -105,14 +119,13 @@ public ResponseEntity<List<Integer>> getCampaignIdsByUser(@PathVariable Integer 
             } catch (Exception e) {
                 // Hata durumunda kullanıcıya uygun bir mesaj veriyoruz
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(Collections.singletonList(Map.of("error", "Error fetching campaign details for campaignId: " + campaignId)));
+                     t   .body(Collections.singletonList(Map.of("error", "Error fetching campaign details for campaignId: " + campaignId)));
             }
         }
 
         // Kampanya detaylarını döndürüyoruz
         return ResponseEntity.ok(campaignDetails);
     }
-
 
 
 
