@@ -119,7 +119,7 @@ public ResponseEntity<List<Integer>> getCampaignIdsByUser(@PathVariable Integer 
             } catch (Exception e) {
                 // Hata durumunda kullanıcıya uygun bir mesaj veriyoruz
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                     t   .body(Collections.singletonList(Map.of("error", "Error fetching campaign details for campaignId: " + campaignId)));
+                        .body(Collections.singletonList(Map.of("error", "Error fetching campaign details for campaignId: " + campaignId)));
             }
         }
 
