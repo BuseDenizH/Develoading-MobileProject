@@ -2,6 +2,14 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="goBack" class="back-button">
+            <ion-icon aria-hidden="true" :icon="arrowBackOutline" />
+            <ion-label>Geri</ion-label>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar>
         <ion-title class="name-header">
           <h1>Profil</h1>
         </ion-title>
@@ -109,12 +117,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { arrowBackOutline } from 'ionicons/icons';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonButton, IonModal, IonLabel, IonInput, IonItem, IonButtons } from '@ionic/vue';
 import axios from 'axios';
-
+import { useUserStore } from '@/stores/userStore'
 // Router instance
 const router = useRouter();
+const userStore = useUserStore()
 
 // Kullanıcı bilgileri için reactive değişkenler
 const userEmail = ref('');
@@ -149,6 +159,11 @@ onMounted(async () => {
     console.error('Error loading user data:', error);
   }
 });
+
+// Diğer const tanımlamalarının yanına eklenecek
+const goBack = () => {
+  router.back();
+};
 
 // Modal açma ve kapatma işlemleri
 const editName = () => {
@@ -190,15 +205,19 @@ const saveName = async () => {
 
     const updatedName = res.data.name || '';
     const updatedSurname = res.data.surname || '';
+    const fullName = `${updatedName} ${updatedSurname}`;
 
-    userName.value = `${updatedName} ${updatedSurname}`;
+    userName.value = fullName;
     response.value = 'Ad ve soyad başarıyla güncellendi.';
     isNameModalOpen.value = false;
 
     await SecureStoragePlugin.set({
       key: 'userName',
-      value: `${updatedName} ${updatedSurname}`,
+      value: fullName,
     });
+
+    // Store'u güncelle
+    userStore.updateUserInfo(fullName, userEmail.value)
   } catch (err) {
     error.value = 'Ad ve soyad değiştirme sırasında bir hata oluştu.';
     console.error(err);
@@ -208,14 +227,17 @@ const saveName = async () => {
 const saveEmail = async () => {
   try {
     const res = await axios.put(
-      `http://localhost:8082/api/users/updatemail/${userEmail.value}`,
-      null,
-      { params: { newMail: newEmail.value } }
+        `http://localhost:8082/api/users/updatemail/${userEmail.value}`,
+        null,
+        { params: { newMail: newEmail.value } }
     );
 
     userEmail.value = res.data.mail;
     isEmailModalOpen.value = false;
     response.value = 'E-posta başarıyla güncellendi.';
+
+    // Store'u güncelle
+    userStore.updateUserInfo(userName.value, userEmail.value)
   } catch (err) {
     error.value = 'E-posta değiştirme sırasında bir hata oluştu.';
     console.error(err);
@@ -298,4 +320,32 @@ const savePassword = async () => {
   width: auto;
   padding: 8px 16px;
 }
+
+.back-button {
+  color: #0066ff; /* Mavi renk */
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.back-button ion-icon {
+  margin-right: 5px;
+}
+
+.name-header {
+  background-color: rgb(248, 79, 0);
+  padding: 10px 0px;
+  text-align: left;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.name-header h1 {
+  margin-left: 30px;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+
 </style>

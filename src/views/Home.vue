@@ -21,10 +21,9 @@
       </ion-toolbar>
 
       <!-- Kampanyalar Listesi -->
-      <div v-for="campaign in campaignsWithDetails"
+      <div v-for="campaign in topLikedCampaigns"
            :key="campaign.id"
-           class="container"
-           :class="{ 'expired': campaign.isExpired }">
+           class="container">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
@@ -32,28 +31,22 @@
                 id="share"
                 aria-hidden="true"
                 :icon="shareSocialSharp"
-                @click="!campaign.isExpired && shareContent(campaign)"
-                :class="{ 'disabled': campaign.isExpired }"
+                @click="shareContent(campaign)"
             />
             <ion-icon
                 id="heart"
-                :class="{
-          'red': heartStore.hearts.has(campaign.id),
-          'disabled': campaign.isExpired
-        }"
+                :class="{ 'red': heartStore.hearts.has(campaign.id) }"
                 aria-hidden="true"
                 :icon="heart"
-                @click="!campaign.isExpired && toggleHeart(campaign.id)"
+                @click="toggleHeart(campaign.id)"
             />
           </div>
         </div>
         <router-link
-            v-if="!campaign.isExpired"
             :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
             class="card-link">
           {{ campaign.detail }}
         </router-link>
-        <span v-else class="card-link expired-text">{{ campaign.detail }}</span>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -68,7 +61,7 @@
       </div>
 
       <ion-toolbar>
-        <ion-title class="title">Son Kampanyalar</ion-title>
+        <ion-title class="title">Bütün Kampanyalar</ion-title>
         <hr class="line">
       </ion-toolbar>
 
@@ -159,6 +152,20 @@ onMounted(async () => {
     console.error('Data could not be retrieved:', error);
   }
 });
+
+
+
+// En çok beğenilen aktif kampanyalar (ilk 3)
+const topLikedCampaigns = computed(() => {
+  // Aktif kampanyaları filtrele
+  const activeCampaigns = campaignsWithDetails.value.filter(campaign => !campaign.isExpired);
+
+  // Beğeni sayısına göre sırala ve ilk 3'ü al
+  return activeCampaigns
+      .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
+      .slice(0, 3);
+});
+
 
 const shareContent = async (campaign: any) => {
   if (campaign.isExpired) return;

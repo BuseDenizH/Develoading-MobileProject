@@ -2,6 +2,14 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button @click="goBack" class="back-button">
+            <ion-icon aria-hidden="true" :icon="arrowBackOutline" />
+            <ion-label>Geri</ion-label>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar>
         <ion-title class="name-header">
           <h1>Ayarlar</h1>
         </ion-title>
@@ -28,7 +36,8 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import {IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonLabel, IonButton} from '@ionic/vue';
+import {arrowBackOutline} from "ionicons/icons";
 
 // Router instance
 const router = useRouter();
@@ -36,6 +45,11 @@ const router = useRouter();
 // Kullanıcı bilgileri için reactive değişkenler
 const userEmail = ref('');
 const userName = ref('');
+
+const goBack = () => {
+  router.back();
+};
+
 
 // Kullanıcı bilgilerini yükleme
 onMounted(async () => {
@@ -66,8 +80,9 @@ onMounted(async () => {
 
 .name-header h1 {
   margin-left: 30px;
-  font-size: 30px; /* Ayarlar yazısı için boyut 26 (2 derece artırıldı) */
-  font-weight: bold; /* Yazıyı kalın yap */
+  margin-bottom: 0;
+  font-size: 30px;
+  font-weight: bold;
 }
 
 .options {
@@ -106,5 +121,16 @@ onMounted(async () => {
 .arrow {
   margin-left: auto; /* Ok işaretini en sağa it */
   font-size: 24px;
+}
+
+
+.back-button {
+  color: #0066ff; /* Mavi renk */
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.back-button ion-icon {
+  margin-right: 5px;
 }
 </style>

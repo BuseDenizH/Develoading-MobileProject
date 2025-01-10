@@ -3,8 +3,8 @@
     <ion-header>
       <ion-toolbar>
         <ion-title class="name-header">
-          <h1>{{ userName }}</h1>
-          <h4>{{ userEmail }}</h4>
+          <h1>{{ userStore.userName }}</h1>
+          <h4>{{ userStore.userEmail }}</h4>
         </ion-title>
       </ion-toolbar>
     </ion-header>
@@ -53,6 +53,9 @@ import {
   logOutOutline,
   basketOutline
 } from 'ionicons/icons';
+import { useUserStore } from '@/stores/userStore'
+
+const userStore = useUserStore()
 
 const goToProfilePopup = () => {
   router.push('/profilpopup');
@@ -80,13 +83,14 @@ const userName = ref('');
 // Kullanıcı bilgilerini yükleme
 onMounted(async () => {
   try {
-    // Saklanan kullanıcı bilgilerini al
     const emailData = await SecureStoragePlugin.get({ key: 'userEmail' });
     const nameData = await SecureStoragePlugin.get({ key: 'userName' });
 
-    // Değişkenlere ata
     userEmail.value = emailData.value || 'admin@admin.com';
     userName.value = nameData.value || 'İsim Soyisim';
+
+    // Store'u güncelle
+    userStore.updateUserInfo(userName.value, userEmail.value)
   } catch (error) {
     console.error('Error loading user data:', error);
   }
