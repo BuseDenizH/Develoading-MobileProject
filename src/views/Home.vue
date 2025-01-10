@@ -21,22 +21,39 @@
       </ion-toolbar>
 
       <!-- Kampanyalar Listesi -->
-      <div v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container">
-      <div class="images-container">
+      <div v-for="campaign in campaignsWithDetails"
+           :key="campaign.id"
+           class="container"
+           :class="{ 'expired': campaign.isExpired }">
+        <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
+            <ion-icon
+                id="share"
+                aria-hidden="true"
+                :icon="shareSocialSharp"
+                @click="!campaign.isExpired && shareContent(campaign)"
+                :class="{ 'disabled': campaign.isExpired }"
+            />
             <ion-icon
                 id="heart"
-                :class="{ red: heartStore.hearts.has(campaign.id) }"
+                :class="{
+          'red': heartStore.hearts.has(campaign.id),
+          'disabled': campaign.isExpired
+        }"
                 aria-hidden="true"
                 :icon="heart"
-                @click="toggleHeart(campaign.id)"
+                @click="!campaign.isExpired && toggleHeart(campaign.id)"
             />
           </div>
         </div>
-        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-          class="card-link">{{ campaign.detail }}</router-link>
+        <router-link
+            v-if="!campaign.isExpired"
+            :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
+            class="card-link">
+          {{ campaign.detail }}
+        </router-link>
+        <span v-else class="card-link expired-text">{{ campaign.detail }}</span>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -55,22 +72,39 @@
         <hr class="line">
       </ion-toolbar>
 
-      <div v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container">
+      <div v-for="campaign in campaignsWithDetails"
+           :key="campaign.id"
+           class="container"
+           :class="{ 'expired': campaign.isExpired }">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
+            <ion-icon
+                id="share"
+                aria-hidden="true"
+                :icon="shareSocialSharp"
+                @click="!campaign.isExpired && shareContent(campaign)"
+                :class="{ 'disabled': campaign.isExpired }"
+            />
             <ion-icon
                 id="heart"
-                :class="{ red: heartStore.hearts.has(campaign.id) }"
+                :class="{
+          'red': heartStore.hearts.has(campaign.id),
+          'disabled': campaign.isExpired
+        }"
                 aria-hidden="true"
                 :icon="heart"
-                @click="toggleHeart(campaign.id)"
+                @click="!campaign.isExpired && toggleHeart(campaign.id)"
             />
           </div>
         </div>
-        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-                     class="card-link">{{ campaign.detail }}</router-link>
+        <router-link
+            v-if="!campaign.isExpired"
+            :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
+            class="card-link">
+          {{ campaign.detail }}
+        </router-link>
+        <span v-else class="card-link expired-text">{{ campaign.detail }}</span>
         <hr class="inline">
         <div class="under-container">
           <div class="inner-info">
@@ -127,25 +161,48 @@ onMounted(async () => {
 });
 
 const shareContent = async (campaign: any) => {
+  if (campaign.isExpired) return;
+
   try {
     await Share.share({
       title: 'Kampanya Detayı',
-      text: campaign.detail,  // Kampanya açıklaması
-      url: campaign.url,      // Kampanya URL'si
+      text: campaign.detail,
+      url: campaign.url,
     });
-    console.log('Paylaşım başarılı');
   } catch (error) {
     console.error('Paylaşım hatası:', error);
   }
 };
 
-// watch kısmını kaldırıp yerine computed ekleyin
+
 const campaignsWithDetails = computed(() => {
-  return campaigns.value.map(campaign => ({
-    ...campaign,
-    cardName: cardStore.getCardName(campaign.cardId),
-    companyName: cardStore.getCompanyName(campaign.companyId)
-  }));
+  // Önce tüm kampanyaları işle ve isExpired bilgisini ekle
+  const processedCampaigns = campaigns.value.map(campaign => {
+    const today = new Date();
+    const expiryDate = new Date(campaign.endDate);
+    const isExpired = today > expiryDate;
+
+    return {
+      ...campaign,
+      cardName: cardStore.getCardName(campaign.cardId),
+      companyName: cardStore.getCompanyName(campaign.companyId),
+      isExpired,
+      expiryDate // Sıralama için tarih bilgisini de ekleyelim
+    };
+  });
+
+  // Aktif ve süresi geçmiş kampanyaları ayır
+  const activeCampaigns = processedCampaigns.filter(campaign => !campaign.isExpired);
+  const expiredCampaigns = processedCampaigns.filter(campaign => campaign.isExpired);
+
+  // Aktif kampanyaları bitiş tarihine göre sırala (yakın tarihli önce)
+  activeCampaigns.sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
+
+  // Süresi geçmiş kampanyaları bitiş tarihine göre sırala (son bitenler önce)
+  expiredCampaigns.sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
+
+  // Önce aktif kampanyalar, sonra süresi geçmişler
+  return [...activeCampaigns, ...expiredCampaigns];
 });
 
 const getCardName = async (cardId: number) => {
@@ -180,7 +237,30 @@ const fetchCampaigns = async () => {
     }
 
     const response = await axios.get(url);
-    campaigns.value = response.data;
+    const allCampaigns = response.data;
+
+    // Kampanyaları aktif ve süresi geçmiş olarak ayır
+    const today = new Date();
+    const active = [];
+    const expired = [];
+
+    allCampaigns.forEach(campaign => {
+      const expiryDate = new Date(campaign.endDate);
+      if (today > expiryDate) {
+        expired.push(campaign);
+      } else {
+        active.push(campaign);
+      }
+    });
+
+    // Aktif kampanyaları bitiş tarihine göre sırala
+    active.sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
+
+    // Süresi geçmiş kampanyaları bitiş tarihine göre sırala
+    expired.sort((a, b) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
+
+    // Birleştir ve state'e ata
+    campaigns.value = [...active, ...expired];
 
     const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userId.value}`);
     const likedCampaigns = likedResponse.data;
@@ -195,8 +275,11 @@ const fetchCampaigns = async () => {
 };
 
 // Tarihi formatla
-const formatDate = (date: string) => date.split('T')[0];
-
+const formatDate = (date: string) => {
+  if (!date) return '';
+  const [year, month, day] = date.split('T')[0].split('-');
+  return `${day}/${month}/${year}`;
+};
 // Beğenme durumunun kontrolü
 const isHearted = (campaignId: number) => hearts.value.has(campaignId);
 
@@ -205,6 +288,9 @@ const isHearted = (campaignId: number) => hearts.value.has(campaignId);
 
 // toggleHeart fonksiyonunu bu şekilde güncelleyin:
 const toggleHeart = async (campaignId: number) => {
+  const campaign = campaignsWithDetails.value.find(c => c.id === campaignId);
+  if (campaign?.isExpired) return;
+
   if (userId.value === 0) {
     console.error("Geçerli bir kullanıcı bulunamadı.");
     return;
@@ -403,4 +489,51 @@ ion-icon {
 .red {
   color: red;
 }
+
+
+
+
+.expired {
+opacity: 0.6;
+position: relative;
+pointer-events: none;
+border-color: #ccc !important;
+}
+
+.expired::after {
+content: "Kampanya Süresi Doldu";
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background-color: rgba(0, 0, 0, 0.7);
+color: white;
+padding: 10px 20px;
+border-radius: 5px;
+z-index: 1;
+pointer-events: none;
+}
+
+.expired img {
+filter: grayscale(100%);
+}
+
+.disabled {
+opacity: 0.5;
+cursor: not-allowed !important;
+}
+
+.expired-text {
+color: #999;
+cursor: default;
+}
+
+.expired .inner-info p {
+color: #999 !important;
+}
+
+.expired .click-icons ion-icon {
+color: #ccc !important;
+}
+
 </style>
