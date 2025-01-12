@@ -86,7 +86,7 @@ const routes: Array<RouteRecordRaw> = [
         props: true
       },
       {
-        path: 'tab6/:category',
+        path: 'tab6/:category/:companyName',
         name: 'FirmsPopPage',
         component: () => import('@/views/FirmsPopPage.vue'),
         props: true

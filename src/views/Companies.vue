@@ -16,12 +16,9 @@
         <ion-row>
           <ion-col v-for="item in filteredItems" :key="item.id" size="6">
             <div>
-              <img
-                  :src="item.image"
-                  @click="handleClick(item.name)"
-                  style="width: 100%; height: 100px; margin-top:10px; cursor: pointer;"
-              />
-              <div class="image-caption" @click="handleClick(item.name)">
+              <img :src="item.image" @click="handleClick(item.id)"
+                style="width: 100%; height: 100px; margin-top:10px; cursor: pointer;" />
+              <div class="image-caption" @click="handleClick(item.id)">
                 <h3>{{ item.name }}</h3>
               </div>
             </div>
@@ -36,7 +33,7 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import {  IonContent, IonCol, IonGrid, IonPage, IonRow,IonSearchbar, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon} from '@ionic/vue';
+import { IonContent, IonCol, IonGrid, IonPage, IonRow, IonSearchbar, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
 
 const items = ref([]);
@@ -49,12 +46,13 @@ const filteredItems = computed(() => {
     return items.value;
   }
   return items.value.filter(item =>
-      item.name.toLowerCase().includes(term)
+    item.name.toLowerCase().includes(term)
   );
 });
 
-const handleClick = (category: string) => {
-  router.push({ name: 'FirmsPopPage', params: { category } });
+const handleClick = (category: number) => {
+  console.log(category);
+  router.push({ name: 'FirmsPopPage', params: { category: category, companyName: items.value.find(item => item.id === category)?.name || '' } });
 };
 
 const router = useRouter();

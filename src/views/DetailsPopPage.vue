@@ -135,7 +135,7 @@ watch(route, async () => {
 });
 
 const goBack = () => {
-  router.push('/tabs/tab1');
+  router.go(-1); // Bir önceki sayfaya dön
 };
 
 const goToLink = (url: string) => {
