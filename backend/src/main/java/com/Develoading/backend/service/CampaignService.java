@@ -41,6 +41,11 @@ public class CampaignService {
         return campaignRepository.findByCardId(cardId);
     }
 
+    // Şirket ID'sine göre kampanyaları almak için metot
+    public List<Campaign> getCampaignsByCompanyId(Integer companyId) {
+        return campaignRepository.findByCompanyId(companyId);
+    }
+
     @Transactional
     public void incrementLike(Integer campaignId) {
         campaignRepository.incrementLikeCount(campaignId);

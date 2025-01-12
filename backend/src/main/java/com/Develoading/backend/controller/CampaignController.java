@@ -52,6 +52,18 @@ public class CampaignController {
         return new ResponseEntity<>(campaigns, HttpStatus.OK);
     }
 
+    // Şirket ID'sine göre kampanyaları döndüren yeni endpoint
+    @GetMapping("/by-company/{companyId}")
+    public ResponseEntity<List<Campaign>> getCampaignsByCompanyId(@PathVariable Integer companyId) {
+        List<Campaign> campaigns = campaignService.getCampaignsByCompanyId(companyId);
+
+        if (campaigns == null || campaigns.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(campaigns, HttpStatus.OK);
+    }
+
+
     @PostMapping("/{id}/like")
     public ResponseEntity<Void> likeCampaign(@PathVariable Integer id) {
         campaignService.incrementLike(id);

@@ -15,6 +15,9 @@ public interface CampaignRepository extends JpaRepository<Campaign, Integer> {
     // Kart ID'sine göre kampanyaları bulma
     List<Campaign> findByCardId(Integer cardId);
 
+    // Şirket ID'sine göre kampanyaları bulma
+    List<Campaign> findByCompanyId(Integer companyId);
+
     // Bitiş tarihine göre sıralanmış kampanyaları bulma
     List<Campaign> findAllByOrderByEndDateAsc();
 
