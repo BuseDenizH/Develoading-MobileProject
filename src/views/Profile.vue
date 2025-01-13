@@ -80,23 +80,36 @@ const router = useRouter();
 const userEmail = ref('');
 const userName = ref('');
 
-// Kullanıcı bilgilerini yükleme
 onMounted(async () => {
   try {
+    // Kullanıcı bilgilerini Secure Storage'dan al
     const emailData = await SecureStoragePlugin.get({ key: 'userEmail' });
     const nameData = await SecureStoragePlugin.get({ key: 'userName' });
 
+    // Eğer kullanıcı giriş yapmamışsa, giriş sayfasına yönlendir
+    if (!emailData.value || !nameData.value) {
+      router.push('/'); // Ana giriş sayfasına yönlendir
+      return;
+    }
+
+    // Giriş yapmışsa kullanıcı bilgilerini al
     userEmail.value = emailData.value || 'admin@admin.com';
     userName.value = nameData.value || 'İsim Soyisim';
 
     // Store'u güncelle
-    userStore.updateUserInfo(userName.value, userEmail.value)
+    userStore.updateUserInfo(userName.value, userEmail.value);
+
+    // Logout sonrası bir kez sayfayı yenile
+    if (localStorage.getItem('refreshAfterLogin') === 'true') {
+      localStorage.removeItem('refreshAfterLogin'); // Flag'i sil
+      window.location.reload(); // Sayfayı yenile
+    }
   } catch (error) {
     console.error('Error loading user data:', error);
   }
 });
 
-// Çıkış yapma fonksiyonu
+
 const logout = async () => {
   try {
     // Saklanan kullanıcı bilgilerini temizle
@@ -104,16 +117,25 @@ const logout = async () => {
     await SecureStoragePlugin.remove({ key: 'userName' });
     await SecureStoragePlugin.remove({ key: 'userId' });
 
-    // Tarayıcıda yerel depolamayı (localStorage, sessionStorage) temizle
+    // Tarayıcıda yerel depolamayı temizle
     localStorage.clear();
     sessionStorage.clear();
 
-    // Kullanıcıyı giriş sayfasına yönlendir
-    router.push('/');
+    // Store'u sıfırla
+    userStore.updateUserInfo('', '');
+
+    // Giriş sayfasına yönlendir ve sayfayı yenile
+    router.push('/'); // Ana sayfaya yönlendir
+    setTimeout(() => {
+      window.location.reload(); // Kısa bir gecikmeden sonra sayfayı yenile
+    }, 100);
   } catch (error) {
     console.error('Error during logout:', error);
   }
 };
+
+
+
 </script>
 
 <style>
