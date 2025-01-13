@@ -159,4 +159,23 @@ public ResponseEntity<List<Integer>> getCampaignIdsByUser(@PathVariable Integer 
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
+
+    // UsedCampaignController'a ekleyin
+    @PostMapping("/toggle")
+    public ResponseEntity<String> toggleCampaignUsage(@RequestParam Integer userId, @RequestParam Integer campaignId) {
+        if (userId == null || campaignId == null) {
+            return ResponseEntity.badRequest().body("User ID and Campaign ID cannot be null.");
+        }
+
+        try {
+            boolean wasUsed = usedCampaignService.toggleCampaignUsage(userId, campaignId);
+            String message = wasUsed ? "Campaign marked as used" : "Campaign marked as unused";
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error while toggling campaign usage: " + e.getMessage());
+        }
+    }
 }

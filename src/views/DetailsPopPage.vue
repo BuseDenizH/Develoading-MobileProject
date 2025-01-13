@@ -56,10 +56,16 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-          <ion-button :disabled="isUsed" @click="markAsUsed" expand="block" color="danger">
-            Kullandım
+          <ion-button
+              @click="toggleUsed"
+              expand="block"
+              :color="isUsed ? 'medium' : 'danger'"
+              class="use-button"
+              :disabled="isProcessing"
+          >
+            {{ isUsed ? 'Kullanıldı' : 'Kullandım' }}
           </ion-button>
-          <ion-button expand="block" color="danger" @click="goToLink(item.url)">
+          <ion-button color="danger" @click="goToLink(item.url)">
             Detayı Görüntüle
           </ion-button>
         </div>
@@ -85,6 +91,8 @@ const route = useRoute();
 const router = useRouter();
 const item = ref(null);
 const isUsed = ref(false); // Button status
+// Diğer ref tanımlamalarının yanına ekleyin
+const isProcessing = ref(false);
 
 // User ID al
 const getUserId = async () => {
@@ -125,13 +133,14 @@ const shareContent = async () => {
 };
 
 // İlk mount işlemi ve her sayfa geçişinde kampanya verisini yenile
-onMounted(() => {
-  fetchCampaignDetails();
+onMounted(async () => {
+  await fetchCampaignDetails();
+  await checkIfCampaignIsUsed();
 });
-
 // İzleme işlemi - kampanyayı izleyip yenileyebiliriz
 watch(route, async () => {
   await fetchCampaignDetails();
+  await checkIfCampaignIsUsed();
 });
 
 const goBack = () => {
@@ -146,6 +155,66 @@ const formatDate = (dateString: string) => {
   return dateString?.split('T')[0] || '';
 };
 
+
+
+
+// Script kısmında değişiklikler
+const toggleUsed = async () => {
+  try {
+    const userId = await getUserId();
+    if (isNaN(userId) || userId <= 0 || !item.value) return;
+
+    // İşlem devam ediyorsa yeni işlemi engelle
+    if (isProcessing.value) {
+      console.log('İşlem devam ediyor, lütfen bekleyin...');
+      return;
+    }
+
+    // İşlem başladı
+    isProcessing.value = true;
+
+    const response = await axios.post(`http://localhost:8082/api/used-campaigns/toggle`, null, {
+      params: {
+        userId: userId,
+        campaignId: item.value.id
+      }
+    });
+
+    if (response.status === 200) {
+      isUsed.value = !isUsed.value; // Durumu tersine çevir
+      console.log(response.data); // Sunucudan gelen mesajı göster
+    }
+  } catch (error) {
+    console.error('Kampanya kullanım durumu değiştirilemedi:', error);
+  } finally {
+    // İşlem bitti, kilidi kaldır
+    isProcessing.value = false;
+  }
+};
+
+
+
+// Script kısmında yapılacak değişiklikler
+const checkIfCampaignIsUsed = async () => {
+  try {
+    const userId = await getUserId();
+    if (isNaN(userId) || userId <= 0 || !item.value) return;
+
+    // Kullanıcının kullandığı kampanyaları al
+    const response = await axios.get(`http://localhost:8082/api/used-campaigns/campaigns/${userId}`);
+
+    // Eğer response.data boş değilse ve current kampanya ID'si kullanılan kampanyalar arasındaysa
+    if (response.data && response.data.includes(item.value.id)) {
+      isUsed.value = true;
+    }
+  } catch (error) {
+    console.error('Kampanya kullanım durumu kontrol edilemedi:', error);
+  }
+};
+
+
+
+
 // Kampanyayı kullanıldık olarak işaretleme
 const markAsUsed = async () => {
   if (isUsed.value || !item.value) return;
@@ -157,15 +226,24 @@ const markAsUsed = async () => {
       return;
     }
 
-    const campaignId = item.value.id;
     const response = await axios.post('http://localhost:8082/api/used-campaigns/use', null, {
-      params: { userId, campaignId },
+      params: {
+        userId: userId,
+        campaignId: item.value.id
+      }
     });
 
-    console.log(response.data);
-    isUsed.value = true;
+    if (response.status === 200) {
+      isUsed.value = true;
+      // İsteğe bağlı: Başarılı işlem mesajı göster
+      console.log('Kampanya başarıyla kullanıldı olarak işaretlendi');
+    }
   } catch (error) {
-    console.error('Kampanya kullanılamadı:', error);
+    if (error.response?.status === 400) {
+      console.error('Bu kampanya zaten kullanılmış');
+    } else {
+      console.error('Kampanya kullanılamadı:', error);
+    }
   }
 };
 </script>
@@ -208,7 +286,29 @@ const markAsUsed = async () => {
   color: #444;
 }
 
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+}
+
 .action-buttons ion-button {
-  margin-top: 10px;
+  width: 100%;
+  height: 40px;
+  margin: 5px 0;
+  --padding-top: 15px;
+  --padding-bottom: 15px;
+}
+
+.use-button {
+  transition: all 0.3s ease;
+}
+
+.use-button.danger {
+  --background: var(--ion-color-danger);
+}
+
+.use-button.medium {
+  --background: var(--ion-color-medium);
 }
 </style>

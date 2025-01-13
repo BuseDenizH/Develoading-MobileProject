@@ -13,7 +13,19 @@
     </ion-header>
 
     <ion-content :fullscreen="true">
-      <div v-for="campaign in campaignsWithDetails"
+      <div v-if="campaignsWithDetails.length === 0" class="empty-state">
+        <div class="empty-state-content">
+          <p>Henüz hiçbir kampanyayı beğenmediniz. Kampanyalara göz atmak için ana sayfamızı ziyaret ediniz.</p>
+          <ion-button
+              @click="goToHomePage"
+              color="danger"
+              class="home-button"
+          >
+            Ana Sayfa
+          </ion-button>
+        </div>
+      </div>
+      <div v-else v-for="campaign in campaignsWithDetails"
            :key="campaign.id"
            class="container"
            :class="{ 'expired': campaign.isExpired }">
@@ -231,6 +243,10 @@ const formatDate = (date: string) => {
   return `${day}/${month}/${year}`;
 };
 
+const goToHomePage = () => {
+  router.push('/tabs/tab1');
+};
+
 const goBack = () => {
   router.push('/tabs/tab4');
 };
@@ -411,7 +427,45 @@ ion-icon {
 
 
 
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  margin: 20px;
+  text-align: center;
+  color: #666;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+}
 
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.empty-state-content p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #666;
+  max-width: 300px;
+}
+
+.home-button {
+  width: 200px;
+  --padding-top: 15px;
+  --padding-bottom: 15px;
+  font-weight: bold;
+  text-transform: none;
+  --background: var(--ion-color-danger);
+}
+
+.home-button:hover {
+  --background: var(--ion-color-danger-shade);
+}
 
 
 
