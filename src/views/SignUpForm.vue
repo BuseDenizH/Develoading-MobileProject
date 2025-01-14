@@ -52,23 +52,18 @@
           <!-- Terms and Privacy Agreement -->
           <ion-item lines="none">
             <ion-checkbox slot="start" v-model="agreeTerms"></ion-checkbox>
-            <ion-label>I agree to the <span class="terms">Terms of Services</span> and <span class="privacy">Privacy
-                Policy</span>.</ion-label>
+            <ion-label>
+              I agree to the 
+              <span class="terms" @click="openTermsModal">Terms of Services</span> and 
+              <span class="privacy" @click="openPrivacyModal">Privacy Policy</span>.
+            </ion-label>
           </ion-item>
 
           <!-- Sign Up Button -->
           <ion-button expand="block" color="danger" :disabled="!agreeTerms" type="submit">Üye Ol</ion-button>
         </form>
 
-        <!-- Other Sign-Up Options -->
-        <ion-row class="ion-justify-content-center">
-          <ion-col size="auto">
-            </ion-col>
-        </ion-row>
-
-        
-
-        <!-- Already a Member kısmını düzenleyelim -->
+        <!-- Already a Member -->
         <ion-row class="ion-justify-content-center">
           <ion-col size="auto" class="login-container">
             <ion-text color="dark" class="login-text">
@@ -80,6 +75,36 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+
+      <!-- Terms of Services Modal -->
+      <ion-modal :is-open="isTermsModalOpen" @didDismiss="closeTermsModal">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Terms of Services</ion-title>
+            <ion-buttons slot="end">
+              <ion-button @click="closeTermsModal">Kapat</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+           <p>Bu uygulamayı kullanarak, yalnızca yasal ve etik kurallara uygun davranacağınızı kabul edersiniz. Hesap güvenliğinizden siz sorumlusunuz. Uygulama, önceden haber vermeksizin değiştirilebilir veya sonlandırılabilir.</p>
+        </ion-content>
+      </ion-modal>
+
+      <!-- Privacy Policy Modal -->
+      <ion-modal :is-open="isPrivacyModalOpen" @didDismiss="closePrivacyModal">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Privacy Policy</ion-title>
+            <ion-buttons slot="end">
+              <ion-button @click="closePrivacyModal">Kapat</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+          <p>Bu uygulama, kişisel verilerinizi koruma altına almayı taahhüt eder. Bilgileriniz yalnızca kayıt işlemleri ve uygulama özelliklerini sağlamak amacıyla kullanılır. Üçüncü taraflarla paylaşılmaz. </p>
+        </ion-content>
+      </ion-modal>
     </ion-content>
   </ion-page>
 </template>
@@ -88,16 +113,40 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import icon from '@/assets/icon.png';
-import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton, IonGrid, IonRow, IonCol, IonImg, IonText, IonCheckbox } from '@ionic/vue';
-import { onIonViewWillLeave, onIonViewDidEnter } from '@ionic/vue'; // Bu import'u ekleyin
+import { 
+  IonPage, IonHeader, IonToolbar, IonContent, IonImg, IonText, IonCheckbox, IonModal, IonButton, 
+  IonLabel, IonInput, IonItem, IonGrid, IonRow, IonCol, IonButtons 
+} from '@ionic/vue';
 
 const router = useRouter();
 const logo = icon;
 const mail = ref('');
 const password = ref('');
-const confirmPassword = ref(''); // Şifreyi tekrar girmek için yeni bir değişken
+const confirmPassword = ref('');
 const agreeTerms = ref(false);
 
+// Modals state
+const isTermsModalOpen = ref(false);
+const isPrivacyModalOpen = ref(false);
+
+// Functions for modals
+const openTermsModal = () => {
+  isTermsModalOpen.value = true;
+};
+
+const closeTermsModal = () => {
+  isTermsModalOpen.value = false;
+};
+
+const openPrivacyModal = () => {
+  isPrivacyModalOpen.value = true;
+};
+
+const closePrivacyModal = () => {
+  isPrivacyModalOpen.value = false;
+};
+
+// Registration logic
 const register = async () => {
   if (password.value !== confirmPassword.value) {
     alert('Şifreler eşleşmiyor. Lütfen kontrol edin.');
@@ -106,7 +155,6 @@ const register = async () => {
 
   if (agreeTerms.value) {
     try {
-      debugger
       const response = await fetch('http://18.153.153.139:8082/api/users/register', {
         method: 'POST',
         headers: {
@@ -117,7 +165,7 @@ const register = async () => {
           password: password.value,
         }),
       });
-      debugger
+
       if (response.ok) {
         alert('Kayıt başarılı!');
         router.push({ name: 'Login' });
@@ -129,7 +177,6 @@ const register = async () => {
       }
     } catch (error) {
       console.error('Kayıt başarısız:', error);
-      debugger
       alert('Bir hata meydana geldi.');
     }
   } else {
@@ -137,25 +184,10 @@ const register = async () => {
   }
 };
 
-
-onIonViewWillLeave(() => {
-  // Sayfadan ayrılmadan önce tüm focuslanabilir elementlerin focusunu kaldır
-  const focusableElements = document.querySelectorAll('a, button, [tabindex]');
-  focusableElements.forEach(element => {
-    if (element instanceof HTMLElement) {
-      element.blur();
-    }
-  });
-});
-
-// Login sayfasına yönlendirme fonksiyonu
+// Navigate to Login page
 const goToLogin = () => {
-  // Yönlendirmeden önce tüm focusları temizle
-  document.activeElement instanceof HTMLElement && document.activeElement.blur();
   router.push('/login');
 };
-
-
 </script>
 
 <style scoped>
@@ -178,19 +210,15 @@ const goToLogin = () => {
 .terms,
 .privacy {
   color: red;
+  text-decoration: underline;
+  cursor: pointer;
 }
-
-
-.back-button {
-  color: blue;
-}
-
 
 .login-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px; /* Metin ile buton arasındaki boşluk */
+  gap: 5px;
 }
 
 .login-text {
