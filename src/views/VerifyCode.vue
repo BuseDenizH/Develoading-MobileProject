@@ -55,7 +55,10 @@ const verifyCode = async () => {
     // Kod doğrulama işlemi
     if (verificationCode.value === backendResetCode.value) {
         alert('Kod doğrulandı!');
-        router.push({ name: 'ResetPassword' });
+        router.push({
+            name: 'ResetPassword',
+            query: { email: email.value }
+        });
     } else {
         alert('Yanlış giriş!');
         console.log(email.value);

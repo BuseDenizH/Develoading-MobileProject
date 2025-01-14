@@ -35,13 +35,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // vue-router import edildi
+import { useRouter, useRoute } from 'vue-router'; // vue-router import edildi
 import { arrowBackOutline } from 'ionicons/icons';
 import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
 import axios from 'axios';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 const router = useRouter();
+const route = useRoute();
 const newPassword = ref('');
 const confirmNewPassword = ref('');
 
@@ -58,7 +59,8 @@ const resetPassword = async () => {
             return;
         }
 
-        const userEmail = await SecureStoragePlugin.get({ key: 'userEmail' });
+        const userEmail = ref('');
+        userEmail.value = route.query.email as string;
         console.log(userEmail.value);
         // API çağrısı yap
         const response = await axios.put(`http://18.153.153.139:8082/api/users/modifypassword/${userEmail.value}`, {
