@@ -152,7 +152,10 @@ const goToLink = (url: string) => {
 };
 
 const formatDate = (dateString: string) => {
-  return dateString?.split('T')[0] || '';
+  if (!dateString) return '';
+
+  const [year, month, day] = dateString.split('T')[0].split('-');
+  return `${day}/${month}/${year}`;
 };
 
 

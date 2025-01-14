@@ -1,8 +1,11 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia' // Eklenen satır
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router';
-import { IonicVue } from '@ionic/vue';
+import {
+  IonicVue,
+  IonButtons
+} from '@ionic/vue';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -19,15 +22,20 @@ import '@ionic/vue/css/palettes/dark.system.css';
 import './theme/variables.css';
 
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
-defineCustomElements(window);
 
-const pinia = createPinia() // Eklenen satır
+const pinia = createPinia()
 
 const app = createApp(App)
+app.component('ion-buttons', IonButtons)
+
+app
     .use(IonicVue)
     .use(router)
-    .use(pinia); // Eklenen satır
+    .use(pinia);
 
-router.isReady().then(() => {
+// Promise'i işle
+(async () => {
+  await defineCustomElements(window);
+  await router.isReady();
   app.mount('#app');
-});
+})();

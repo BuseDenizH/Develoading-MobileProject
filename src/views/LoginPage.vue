@@ -24,7 +24,12 @@
             <ion-input type="password" placeholder="Şifrenizi giriniz" v-model="password" required></ion-input>
           </ion-item>
 
-          <ion-button expand="block" type="submit" color="danger" class="login-button">
+          <ion-button
+              expand="block"
+              type="submit"
+              color="danger"
+              class="login-button"
+              @blur="clearFocusBeforeNavigation">
             Giriş Yap
           </ion-button>
         </form>
@@ -39,20 +44,56 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // vue-router import edildi
+import { useRouter, onBeforeRouteLeave } from 'vue-router';
 import { arrowBackOutline } from 'ionicons/icons';
-import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton } from '@ionic/vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonButtons,
+  onIonViewWillLeave
+} from '@ionic/vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
-
 
 // Router kullanımı
 const router = useRouter();
 
-
-
 // Reactive variables for email and password
 const email = ref('admin@admin.com');
 const password = ref('admin');
+
+// Focus yönetimi için hooks
+onBeforeRouteLeave((to, from, next) => {
+  const activeElement = document.activeElement as HTMLElement;
+  if (activeElement) {
+    activeElement.blur();
+  }
+  next();
+});
+
+onIonViewWillLeave(() => {
+  // Tüm focuslanabilir elementlerin focusunu kaldır
+  const focusableElements = document.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  focusableElements.forEach(element => {
+    if (element instanceof HTMLElement) {
+      element.blur();
+    }
+  });
+});
+
+// Login işlemi öncesi focus temizleme
+const clearFocusBeforeNavigation = () => {
+  const activeElement = document.activeElement as HTMLElement;
+  if (activeElement) {
+    activeElement.blur();
+  }
+};
 
 const onLogin = async () => {
   try {
@@ -73,12 +114,14 @@ const onLogin = async () => {
       // Kullanıcı bilgilerini güvenli bir şekilde sakla
       await SecureStoragePlugin.set({ key: 'userEmail', value: user.mail });
       await SecureStoragePlugin.set({ key: 'userName', value: user.name });
-      await SecureStoragePlugin.set({ key: 'userId', value: user.id.toString() });  // userId'yi de sakla
-
+      await SecureStoragePlugin.set({ key: 'userId', value: user.id.toString() });
 
       console.log('Login successful:', user);
       alert(`Hoş geldiniz, ${user.name}`);
-      router.push('/tabs/tab1'); // Başarılı giriş sonrası yönlendirme
+
+      // Yönlendirmeden önce focus'u temizle
+      clearFocusBeforeNavigation();
+      router.push('/tabs/tab1');
     } else {
       alert('Email veya şifre hatalı!');
     }
@@ -88,8 +131,6 @@ const onLogin = async () => {
   }
 };
 
-
-
 const saveUserId = async (id: string) => {
   await SecureStoragePlugin.set({ key: 'userId', value: id });
   console.log('User ID stored securely.');
@@ -97,12 +138,14 @@ const saveUserId = async (id: string) => {
 
 // Forgot password method
 const onForgotPassword = () => {
+  clearFocusBeforeNavigation(); // Focus'u temizle
   console.log('Şifremi Unuttum tiklandi');
   router.push({ name: 'ForgotPassword' });
 };
 
-// Navigation method (this would require an actual implementation)
+// Navigation method
 const goBack = () => {
+  clearFocusBeforeNavigation(); // Focus'u temizle
   console.log('Geri git');
   router.push({ name: 'SignUp' });
 };

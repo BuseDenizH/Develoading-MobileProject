@@ -73,13 +73,15 @@
           <ion-button color="dark">X</ion-button>
         </ion-row>
 
-        <!-- Already a Member -->
+        <!-- Already a Member kısmını düzenleyelim -->
         <ion-row class="ion-justify-content-center">
-          <ion-col size="auto">
-            <ion-text color="dark">
+          <ion-col size="auto" class="login-container">
+            <ion-text color="dark" class="login-text">
               Zaten üye misin?
-              <router-link to="/login">Giriş Yap</router-link>
             </ion-text>
+            <ion-button fill="clear" @click="goToLogin" class="login-link">
+              Giriş Yap
+            </ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -92,6 +94,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import icon from '@/assets/icon.png';
 import { IonPage, IonHeader, IonToolbar, IonContent, IonIcon, IonItem, IonLabel, IonInput, IonButton, IonGrid, IonRow, IonCol, IonImg, IonText, IonCheckbox } from '@ionic/vue';
+import { onIonViewWillLeave, onIonViewDidEnter } from '@ionic/vue'; // Bu import'u ekleyin
 
 const router = useRouter();
 const logo = icon;
@@ -139,6 +142,25 @@ const register = async () => {
   }
 };
 
+
+onIonViewWillLeave(() => {
+  // Sayfadan ayrılmadan önce tüm focuslanabilir elementlerin focusunu kaldır
+  const focusableElements = document.querySelectorAll('a, button, [tabindex]');
+  focusableElements.forEach(element => {
+    if (element instanceof HTMLElement) {
+      element.blur();
+    }
+  });
+});
+
+// Login sayfasına yönlendirme fonksiyonu
+const goToLogin = () => {
+  // Yönlendirmeden önce tüm focusları temizle
+  document.activeElement instanceof HTMLElement && document.activeElement.blur();
+  router.push('/login');
+};
+
+
 </script>
 
 <style scoped>
@@ -169,5 +191,28 @@ const register = async () => {
 
 .back-button {
   color: blue;
+}
+
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px; /* Metin ile buton arasındaki boşluk */
+}
+
+.login-text {
+  display: inline-block;
+}
+
+.login-link {
+  --color: var(--ion-color-primary);
+  font-weight: bold;
+  text-transform: none;
+  margin: 0;
+  padding: 0;
+  height: auto;
+  --padding-start: 4px;
+  --padding-end: 4px;
 }
 </style>

@@ -124,6 +124,13 @@ import { useRouter } from 'vue-router'; // useRouter'ı import et
 import { Share } from '@capacitor/share';
 import { useHeartStore } from '@/stores/heartStore'
 import { useCardStore } from '@/stores/cardStore';
+import { onBeforeRouteLeave } from 'vue-router';
+
+onBeforeRouteLeave((to, from, next) => {
+  (document.activeElement as HTMLElement)?.blur?.();
+  next();
+});
+
 
 const router = useRouter(); // useRouter ile router'ı alıyoruz
 const campaigns = ref<any[]>([]); // Kampanyalar listesi
