@@ -18,13 +18,10 @@
 
     <ion-content :fullscreen="true">
       <div class="options">
-        <a href="/tabs/tab4" class="page-option">
+        <a href="/gizlilik" class="page-option">
           <ion-label>Gizlilik Politikası <span class="arrow">></span></ion-label>
         </a>
-        <a href="/tabs/tab3" class="page-option">
-          <ion-label>Bildirimler <span class="arrow">></span></ion-label>
-        </a>
-        <a href="/tabs/tab1" class="page-option">
+        <a href="/bizeulasin" class="page-option">
           <ion-label>Bize Ulaşın <span class="arrow">></span></ion-label>
         </a>
       </div>
@@ -36,7 +33,7 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
-import {IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonLabel, IonButton} from '@ionic/vue';
+import {IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonLabel, IonButton, IonIcon } from '@ionic/vue';
 import {arrowBackOutline} from "ionicons/icons";
 
 // Router instance
@@ -49,7 +46,6 @@ const userName = ref('');
 const goBack = () => {
   router.back();
 };
-
 
 // Kullanıcı bilgilerini yükleme
 onMounted(async () => {
@@ -122,7 +118,6 @@ onMounted(async () => {
   margin-left: auto; /* Ok işaretini en sağa it */
   font-size: 24px;
 }
-
 
 .back-button {
   color: #0066ff; /* Mavi renk */

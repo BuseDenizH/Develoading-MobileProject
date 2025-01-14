@@ -8,6 +8,8 @@ import ResetPassword from '@/views/ResetPassword.vue';
 import VerifyCode from '@/views/VerifyCode.vue';
 import ProfilPopup from '@/views/ProfilPopup.vue';
 import AyarlarPopup from '@/views/AyarlarPopup.vue';
+import BizeUlasin from '@/views/BizeUlasin.vue';
+import Gizlilik from '@/views/Gizlilik.vue';
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -34,6 +36,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profilpopup',
     name: 'ProfilPopup',
     component: ProfilPopup
+  },
+  {
+    path: '/gizlilik',
+    name: 'Gizlilik',
+    component: Gizlilik
+  },
+  {
+    path: '/bizeulasin',
+    name: 'BizeUlasin',
+    component: BizeUlasin
   },
   {
     path: '/ayarlarpopup',
