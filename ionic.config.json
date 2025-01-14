@@ -1,5 +1,7 @@
 {
   "name": "Develoading",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "vue-vite"
 }

@@ -149,7 +149,7 @@ onMounted(async () => {
     userEmail.value = emailData.value || 'admin@admin.com';
     userName.value = nameData.value || 'İsim Soyisim';
 
-    const res = await axios.get(`http://localhost:8082/api/users/${userEmail.value}`);
+    const res = await axios.get(`http://18.153.153.139:8082/api/users/${userEmail.value}`);
     const fullName = `${res.data.name} ${res.data.surname}`;
 
     userName.value = fullName;
@@ -198,7 +198,7 @@ const closePasswordModal = () => {
 // Kaydetme işlemleri
 const saveName = async () => {
   try {
-    const res = await axios.put(`http://localhost:8082/api/users/update/${userEmail.value}`, {
+    const res = await axios.put(`http://18.153.153.139:8082/api/users/update/${userEmail.value}`, {
       name: newName.value.split(' ')[0],
       surname: newName.value.split(' ')[1] || '',
     });
@@ -227,9 +227,9 @@ const saveName = async () => {
 const saveEmail = async () => {
   try {
     const res = await axios.put(
-        `http://localhost:8082/api/users/updatemail/${userEmail.value}`,
-        null,
-        { params: { newMail: newEmail.value } }
+      `http://18.153.153.139:8082/api/users/updatemail/${userEmail.value}`,
+      null,
+      { params: { newMail: newEmail.value } }
     );
 
     userEmail.value = res.data.mail;
@@ -251,7 +251,7 @@ const savePassword = async () => {
       return;
     }
 
-    const res = await axios.put(`http://localhost:8082/api/users/updatepassword/${userEmail.value}`, {
+    const res = await axios.put(`http://18.153.153.139:8082/api/users/updatepassword/${userEmail.value}`, {
       oldPassword: oldPassword.value,
       newPassword: newPassword.value,
     });
@@ -322,7 +322,8 @@ const savePassword = async () => {
 }
 
 .back-button {
-  color: #0066ff; /* Mavi renk */
+  color: #0066ff;
+  /* Mavi renk */
   font-size: 14px;
   margin-left: 5px;
 }
@@ -346,6 +347,4 @@ const savePassword = async () => {
   font-size: 30px;
   font-weight: bold;
 }
-
-
 </style>

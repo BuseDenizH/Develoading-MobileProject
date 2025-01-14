@@ -21,30 +21,17 @@
       </ion-toolbar>
 
       <!-- Kampanyalar Listesi -->
-      <div v-for="campaign in topLikedCampaigns"
-           :key="campaign.id"
-           class="container">
+      <div v-for="campaign in topLikedCampaigns" :key="campaign.id" class="container">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon
-                id="share"
-                aria-hidden="true"
-                :icon="shareSocialSharp"
-                @click="shareContent(campaign)"
-            />
-            <ion-icon
-                id="heart"
-                :class="{ 'red': heartStore.hearts.has(campaign.id) }"
-                aria-hidden="true"
-                :icon="heart"
-                @click="toggleHeart(campaign.id)"
-            />
+            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
+            <ion-icon id="heart" :class="{ 'red': heartStore.hearts.has(campaign.id) }" aria-hidden="true" :icon="heart"
+              @click="toggleHeart(campaign.id)" />
           </div>
         </div>
-        <router-link
-            :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-            class="card-link">
+        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
+          class="card-link">
           {{ campaign.detail }}
         </router-link>
         <hr class="inline">
@@ -65,36 +52,21 @@
         <hr class="line">
       </ion-toolbar>
 
-      <div v-for="campaign in campaignsWithDetails"
-           :key="campaign.id"
-           class="container"
-           :class="{ 'expired': campaign.isExpired }">
+      <div v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container"
+        :class="{ 'expired': campaign.isExpired }">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon
-                id="share"
-                aria-hidden="true"
-                :icon="shareSocialSharp"
-                @click="!campaign.isExpired && shareContent(campaign)"
-                :class="{ 'disabled': campaign.isExpired }"
-            />
-            <ion-icon
-                id="heart"
-                :class="{
-          'red': heartStore.hearts.has(campaign.id),
-          'disabled': campaign.isExpired
-        }"
-                aria-hidden="true"
-                :icon="heart"
-                @click="!campaign.isExpired && toggleHeart(campaign.id)"
-            />
+            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp"
+              @click="!campaign.isExpired && shareContent(campaign)" :class="{ 'disabled': campaign.isExpired }" />
+            <ion-icon id="heart" :class="{
+              'red': heartStore.hearts.has(campaign.id),
+              'disabled': campaign.isExpired
+            }" aria-hidden="true" :icon="heart" @click="!campaign.isExpired && toggleHeart(campaign.id)" />
           </div>
         </div>
-        <router-link
-            v-if="!campaign.isExpired"
-            :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-            class="card-link">
+        <router-link v-if="!campaign.isExpired"
+          :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }" class="card-link">
           {{ campaign.detail }}
         </router-link>
         <span v-else class="card-link expired-text">{{ campaign.detail }}</span>
@@ -117,7 +89,7 @@
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon } from '@ionic/vue';
 import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, heart } from 'ionicons/icons';
-import { ref, onMounted, computed  } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 import { useRouter } from 'vue-router'; // useRouter'ı import et
@@ -169,8 +141,8 @@ const topLikedCampaigns = computed(() => {
 
   // Beğeni sayısına göre sırala ve ilk 3'ü al
   return activeCampaigns
-      .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
-      .slice(0, 3);
+    .sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
+    .slice(0, 3);
 });
 
 
@@ -221,7 +193,7 @@ const campaignsWithDetails = computed(() => {
 
 const getCardName = async (cardId: number) => {
   try {
-    const response = await axios.get(`http://localhost:8082/api/card-name/${cardId}`);
+    const response = await axios.get(`http://18.153.153.139:8082/api/card-name/${cardId}`);
     return response.data;
   } catch (error) {
     console.error('Kart adı alınamadı:', error);
@@ -231,7 +203,7 @@ const getCardName = async (cardId: number) => {
 
 const getCompanyName = async (companyId: number) => {
   try {
-    const response = await axios.get(`http://localhost:8082/api/company-name/${companyId}`);
+    const response = await axios.get(`http://18.153.153.139:8082/api/company-name/${companyId}`);
     return response.data;
   } catch (error) {
     console.error('Şirket adı alınamadı:', error);
@@ -245,9 +217,9 @@ const fetchCampaigns = async () => {
     let url = '';
 
     if (selectedFilter.value === 'normal') {
-      url = 'http://localhost:8082/api/campaigns';
+      url = 'http://18.153.153.139:8082/api/campaigns';
     } else if (selectedFilter.value === 'cards' && userId.value > 0) {
-      url = `http://localhost:8082/api/user-cards/${userId.value}/campaigns`;
+      url = `http://18.153.153.139:8082/api/user-cards/${userId.value}/campaigns`;
     }
 
     const response = await axios.get(url);
@@ -276,7 +248,7 @@ const fetchCampaigns = async () => {
     // Birleştir ve state'e ata
     campaigns.value = [...active, ...expired];
 
-    const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userId.value}`);
+    const likedResponse = await axios.get(`http://18.153.153.139:8082/api/likedCampaigns/${userId.value}`);
     const likedCampaigns = likedResponse.data;
 
     // Store'u güncelle
@@ -319,21 +291,21 @@ const toggleHeart = async (campaignId: number) => {
 
   try {
     if (heartStore.hearts.has(campaignId)) {
-      const unlikeResponse = await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
+      const unlikeResponse = await axios.delete(`http://18.153.153.139:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
 
       if (unlikeResponse.status === 200) {
         heartStore.updateHearts(campaignId, false);
-        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`);
+        await axios.post(`http://18.153.153.139:8082/api/campaigns/${campaignId}/unlike`);
       }
     } else {
-      const likeResponse = await axios.post('http://localhost:8082/api/likedCampaigns', {
+      const likeResponse = await axios.post('http://18.153.153.139:8082/api/likedCampaigns', {
         userId: userId.value,
         campaignId: campaignId
       });
 
       if (likeResponse.status === 200) {
         heartStore.updateHearts(campaignId, true);
-        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`);
+        await axios.post(`http://18.153.153.139:8082/api/campaigns/${campaignId}/like`);
       }
     }
   } catch (error) {
@@ -508,46 +480,45 @@ ion-icon {
 
 
 .expired {
-opacity: 0.6;
-position: relative;
-pointer-events: none;
-border-color: #ccc !important;
+  opacity: 0.6;
+  position: relative;
+  pointer-events: none;
+  border-color: #ccc !important;
 }
 
 .expired::after {
-content: "Kampanya Süresi Doldu";
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-background-color: rgba(0, 0, 0, 0.7);
-color: white;
-padding: 10px 20px;
-border-radius: 5px;
-z-index: 1;
-pointer-events: none;
+  content: "Kampanya Süresi Doldu";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .expired img {
-filter: grayscale(100%);
+  filter: grayscale(100%);
 }
 
 .disabled {
-opacity: 0.5;
-cursor: not-allowed !important;
+  opacity: 0.5;
+  cursor: not-allowed !important;
 }
 
 .expired-text {
-color: #999;
-cursor: default;
+  color: #999;
+  cursor: default;
 }
 
 .expired .inner-info p {
-color: #999 !important;
+  color: #999 !important;
 }
 
 .expired .click-icons ion-icon {
-color: #ccc !important;
+  color: #ccc !important;
 }
-
 </style>

@@ -16,7 +16,7 @@ export const useCardStore = defineStore('card', () => {
 
         try {
             isLoading.value = true
-            const response = await axios.get('http://localhost:8082/api/cards')
+            const response = await axios.get('http://18.153.153.139:8082/api/cards')
             response.data.forEach((card: any) => {
                 cards.value.set(card.id, card.name)
             })
@@ -34,7 +34,7 @@ export const useCardStore = defineStore('card', () => {
 
         try {
             isLoading.value = true
-            const response = await axios.get('http://localhost:8082/api/companies')
+            const response = await axios.get('http://18.153.153.139:8082/api/companies')
             response.data.forEach((company: any) => {
                 companies.value.set(company.id, company.name)
             })

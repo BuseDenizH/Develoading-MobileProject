@@ -16,45 +16,26 @@
       <div v-if="campaignsWithDetails.length === 0" class="empty-state">
         <div class="empty-state-content">
           <p>Henüz hiçbir kampanyayı beğenmediniz. Kampanyalara göz atmak için ana sayfamızı ziyaret ediniz.</p>
-          <ion-button
-              @click="goToHomePage"
-              color="danger"
-              class="home-button"
-          >
+          <ion-button @click="goToHomePage" color="danger" class="home-button">
             Ana Sayfa
           </ion-button>
         </div>
       </div>
-      <div v-else v-for="campaign in campaignsWithDetails"
-           :key="campaign.id"
-           class="container"
-           :class="{ 'expired': campaign.isExpired }">
+      <div v-else v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container"
+        :class="{ 'expired': campaign.isExpired }">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon
-                id="share"
-                aria-hidden="true"
-                :icon="shareSocialSharp"
-                @click="!campaign.isExpired && shareContent(campaign)"
-                :class="{ 'disabled': campaign.isExpired }"
-            />
-            <ion-icon
-                id="heart"
-                :class="{
-          'red': heartStore.hearts.has(campaign.id),
-          'disabled': campaign.isExpired
-        }"
-                aria-hidden="true"
-                :icon="heart"
-                @click="!campaign.isExpired && toggleHeart(campaign.id)"
-            />
+            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp"
+              @click="!campaign.isExpired && shareContent(campaign)" :class="{ 'disabled': campaign.isExpired }" />
+            <ion-icon id="heart" :class="{
+              'red': heartStore.hearts.has(campaign.id),
+              'disabled': campaign.isExpired
+            }" aria-hidden="true" :icon="heart" @click="!campaign.isExpired && toggleHeart(campaign.id)" />
           </div>
         </div>
-        <router-link
-            v-if="!campaign.isExpired"
-            :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-            class="card-link">
+        <router-link v-if="!campaign.isExpired"
+          :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }" class="card-link">
           {{ campaign.detail }}
         </router-link>
         <span v-else class="card-link expired-text">{{ campaign.detail }}</span>
@@ -85,7 +66,7 @@ import {
   shareSocialSharp,
   heart
 } from 'ionicons/icons';
-import { ref, computed  } from 'vue';
+import { ref, computed } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -155,17 +136,17 @@ onIonViewWillEnter(async () => {
 // Beğenilen kampanyaları getir
 const fetchLikedCampaigns = async () => {
   try {
-    const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userId.value}`);
+    const likedResponse = await axios.get(`http://18.153.153.139:8082/api/likedCampaigns/${userId.value}`);
     const likedCampaignIds = likedResponse.data.map((item: any) => item.campaignId);
 
     // Store'u güncelle
     heartStore.setInitialHearts(likedCampaignIds);
 
-    const campaignsResponse = await axios.get('http://localhost:8082/api/campaigns');
+    const campaignsResponse = await axios.get('http://18.153.153.139:8082/api/campaigns');
     const allCampaigns = campaignsResponse.data;
 
     likedCampaigns.value = allCampaigns.filter((campaign: any) =>
-        likedCampaignIds.includes(campaign.id)
+      likedCampaignIds.includes(campaign.id)
     );
 
   } catch (error) {
@@ -211,22 +192,22 @@ const toggleHeart = async (campaignId: number) => {
 
   try {
     if (heartStore.hearts.has(campaignId)) {
-      const unlikeResponse = await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
+      const unlikeResponse = await axios.delete(`http://18.153.153.139:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
 
       if (unlikeResponse.status === 200) {
         heartStore.updateHearts(campaignId, false);
-        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`);
+        await axios.post(`http://18.153.153.139:8082/api/campaigns/${campaignId}/unlike`);
         likedCampaigns.value = likedCampaigns.value.filter(camp => camp.id !== campaignId);
       }
     } else {
-      const likeResponse = await axios.post('http://localhost:8082/api/likedCampaigns', {
+      const likeResponse = await axios.post('http://18.153.153.139:8082/api/likedCampaigns', {
         userId: userId.value,
         campaignId: campaignId
       });
 
       if (likeResponse.status === 200) {
         heartStore.updateHearts(campaignId, true);
-        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`);
+        await axios.post(`http://18.153.153.139:8082/api/campaigns/${campaignId}/like`);
       }
     }
   } catch (error) {
@@ -466,8 +447,4 @@ ion-icon {
 .home-button:hover {
   --background: var(--ion-color-danger-shade);
 }
-
-
-
-
 </style>

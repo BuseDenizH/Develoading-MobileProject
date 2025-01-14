@@ -52,7 +52,7 @@ const router = useRouter();
 const sendResetLink = async () => {
     try {
         // Sending a GET request with email as part of the URL path
-        const response = await axios.post(`http://localhost:8082/api/users/reset-password/${email.value}`);
+        const response = await axios.post(`http://18.153.153.139:8082/api/users/reset-password/${email.value}`);
 
         if (response.status === 200) {
             alert('Şifre yenileme bağlantısı gönderildi.');

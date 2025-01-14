@@ -9,7 +9,7 @@
             <ion-label>Geri</ion-label>
           </ion-button>
         </ion-buttons>
-        <ion-title>{{ companyName  }} Şirketleri</ion-title>
+        <ion-title>{{ companyName }} Şirketleri</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -86,11 +86,11 @@
 
 <script setup lang="ts">
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon } from '@ionic/vue';
-import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, heart ,  arrowBackOutline } from 'ionicons/icons';
+import { calendarClearOutline, hourglassOutline, cardOutline, storefrontOutline, shareSocialSharp, heart, arrowBackOutline } from 'ionicons/icons';
 import { ref, onMounted, computed } from 'vue';
 import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import axios from 'axios';
-import { useRoute , useRouter } from 'vue-router'; // useRouter'ı import et
+import { useRoute, useRouter } from 'vue-router'; // useRouter'ı import et
 import { Share } from '@capacitor/share';
 import { useHeartStore } from '@/stores/heartStore'
 import { useCardStore } from '@/stores/cardStore';
@@ -107,7 +107,7 @@ const cardStore = useCardStore();
 
 const companyName = ref(route.params.companyName || '');
 const category = route.params.category;
-    console.log(category);
+console.log(category);
 
 const goBack = () => {
   router.go(-1); // Bir önceki sayfaya dön
@@ -193,7 +193,7 @@ const campaignsWithDetails = computed(() => {
 
 const getCardName = async (cardId: number) => {
   try {
-    const response = await axios.get(`http://localhost:8082/api/card-name/${cardId}`);
+    const response = await axios.get(`http://18.153.153.139:8082/api/card-name/${cardId}`);
     return response.data;
   } catch (error) {
     console.error('Kart adı alınamadı:', error);
@@ -203,7 +203,7 @@ const getCardName = async (cardId: number) => {
 
 const getCompanyName = async (companyId: number) => {
   try {
-    const response = await axios.get(`http://localhost:8082/api/company-name/${companyId}`);
+    const response = await axios.get(`http://18.153.153.139:8082/api/company-name/${companyId}`);
     return response.data;
   } catch (error) {
     console.error('Şirket adı alınamadı:', error);
@@ -215,12 +215,12 @@ const getCompanyName = async (companyId: number) => {
 const fetchCampaigns = async () => {
   try {
     try {
-    const response = await axios.get(`http://localhost:8082/api/campaigns/by-company/${category}`);
-    campaigns.value = response.data;
-  } catch (error) {
-    console.error('Kampanyalar yüklenirken hata oluştu:', error);
-    alert('Kampanyalar yüklenemedi. Lütfen daha sonra tekrar deneyin.');
-  }
+      const response = await axios.get(`http://18.153.153.139:8082/api/campaigns/by-company/${category}`);
+      campaigns.value = response.data;
+    } catch (error) {
+      console.error('Kampanyalar yüklenirken hata oluştu:', error);
+      alert('Kampanyalar yüklenemedi. Lütfen daha sonra tekrar deneyin.');
+    }
 
 
     // Kampanyaları aktif ve süresi geçmiş olarak ayır
@@ -246,7 +246,7 @@ const fetchCampaigns = async () => {
     // Birleştir ve state'e ata
     campaigns.value = [...active, ...expired];
 
-    const likedResponse = await axios.get(`http://localhost:8082/api/likedCampaigns/${userId.value}`);
+    const likedResponse = await axios.get(`http://18.153.153.139:8082/api/likedCampaigns/${userId.value}`);
     const likedCampaigns = likedResponse.data;
 
     // Store'u güncelle
@@ -289,21 +289,21 @@ const toggleHeart = async (campaignId: number) => {
 
   try {
     if (heartStore.hearts.has(campaignId)) {
-      const unlikeResponse = await axios.delete(`http://localhost:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
+      const unlikeResponse = await axios.delete(`http://18.153.153.139:8082/api/likedCampaigns/${userId.value}/${campaignId}`);
 
       if (unlikeResponse.status === 200) {
         heartStore.updateHearts(campaignId, false);
-        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/unlike`);
+        await axios.post(`http://18.153.153.139:8082/api/campaigns/${campaignId}/unlike`);
       }
     } else {
-      const likeResponse = await axios.post('http://localhost:8082/api/likedCampaigns', {
+      const likeResponse = await axios.post('http://18.153.153.139:8082/api/likedCampaigns', {
         userId: userId.value,
         campaignId: campaignId
       });
 
       if (likeResponse.status === 200) {
         heartStore.updateHearts(campaignId, true);
-        await axios.post(`http://localhost:8082/api/campaigns/${campaignId}/like`);
+        await axios.post(`http://18.153.153.139:8082/api/campaigns/${campaignId}/like`);
       }
     }
   } catch (error) {

@@ -61,7 +61,7 @@ const resetPassword = async () => {
         const userEmail = await SecureStoragePlugin.get({ key: 'userEmail' });
         console.log(userEmail.value);
         // API çağrısı yap
-        const response = await axios.put(`http://localhost:8082/api/users/modifypassword/${userEmail.value}`, {
+        const response = await axios.put(`http://18.153.153.139:8082/api/users/modifypassword/${userEmail.value}`, {
             newPassword: newPassword.value
         },
             {

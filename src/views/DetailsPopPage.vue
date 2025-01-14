@@ -56,13 +56,8 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-          <ion-button
-              @click="toggleUsed"
-              expand="block"
-              :color="isUsed ? 'medium' : 'danger'"
-              class="use-button"
-              :disabled="isProcessing"
-          >
+          <ion-button @click="toggleUsed" expand="block" :color="isUsed ? 'medium' : 'danger'" class="use-button"
+            :disabled="isProcessing">
             {{ isUsed ? 'Kullanıldı' : 'Kullandım' }}
           </ion-button>
           <ion-button color="danger" @click="goToLink(item.url)">
@@ -86,6 +81,7 @@ import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 
 import axios from 'axios';
 import { Share } from '@capacitor/share';
+import { Browser } from '@capacitor/browser';
 
 const route = useRoute();
 const router = useRouter();
@@ -109,7 +105,7 @@ const getUserId = async () => {
 const fetchCampaignDetails = async () => {
   const { id } = route.params;
   try {
-    const response = await axios.get(`http://localhost:8082/api/campaigns/${id}`);
+    const response = await axios.get(`http://18.153.153.139:8082/api/campaigns/${id}`);
     item.value = response.data;
     console.log("API yanıtı:", response.data);  // Gelen veriyi tekrar kontrol et
     console.log("Kampanyalar:", item.value);
@@ -147,8 +143,8 @@ const goBack = () => {
   router.go(-1); // Bir önceki sayfaya dön
 };
 
-const goToLink = (url: string) => {
-  window.open(url, '_blank');
+const goToLink = async (url: string) => {
+  await Browser.open({ url: url });
 };
 
 const formatDate = (dateString: string) => {
@@ -176,7 +172,7 @@ const toggleUsed = async () => {
     // İşlem başladı
     isProcessing.value = true;
 
-    const response = await axios.post(`http://localhost:8082/api/used-campaigns/toggle`, null, {
+    const response = await axios.post(`http://18.153.153.139:8082/api/used-campaigns/toggle`, null, {
       params: {
         userId: userId,
         campaignId: item.value.id
@@ -204,7 +200,7 @@ const checkIfCampaignIsUsed = async () => {
     if (isNaN(userId) || userId <= 0 || !item.value) return;
 
     // Kullanıcının kullandığı kampanyaları al
-    const response = await axios.get(`http://localhost:8082/api/used-campaigns/campaigns/${userId}`);
+    const response = await axios.get(`http://18.153.153.139:8082/api/used-campaigns/campaigns/${userId}`);
 
     // Eğer response.data boş değilse ve current kampanya ID'si kullanılan kampanyalar arasındaysa
     if (response.data && response.data.includes(item.value.id)) {
@@ -229,7 +225,7 @@ const markAsUsed = async () => {
       return;
     }
 
-    const response = await axios.post('http://localhost:8082/api/used-campaigns/use', null, {
+    const response = await axios.post('http://18.153.153.139:8082/api/used-campaigns/use', null, {
       params: {
         userId: userId,
         campaignId: item.value.id
