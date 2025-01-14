@@ -63,15 +63,10 @@
         <!-- Other Sign-Up Options -->
         <ion-row class="ion-justify-content-center">
           <ion-col size="auto">
-            <ion-text color="medium" class="or-text">ya da alttaki uygulamalardan biriyle üye ol</ion-text>
-          </ion-col>
+            </ion-col>
         </ion-row>
 
-        <!-- Social Media Buttons -->
-        <ion-row class="social-buttons ion-justify-content-center">
-          <ion-button color="primary">Facebook</ion-button>
-          <ion-button color="dark">X</ion-button>
-        </ion-row>
+        
 
         <!-- Already a Member kısmını düzenleyelim -->
         <ion-row class="ion-justify-content-center">
@@ -185,9 +180,6 @@ const goToLogin = () => {
   color: red;
 }
 
-.social-buttons {
-  margin-top: 10px;
-}
 
 .back-button {
   color: blue;
