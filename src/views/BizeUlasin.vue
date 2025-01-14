@@ -39,6 +39,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonLabel, IonButton, IonItem, IonInput, IonTextarea } from '@ionic/vue';
 import { arrowBackOutline } from 'ionicons/icons';
+import axios from 'axios';
 
 // Router instance
 const router = useRouter();
@@ -53,12 +54,31 @@ const goBack = () => {
 };
 
 // Mesaj gönderme fonksiyonu
-const sendMessage = () => {
+const sendMessage = async () => {
   if (note.value && email.value) {
-    console.log('Mesaj gönderildi:', note.value, email.value);
-    // Burada mesaji göndermek için gerekli işlemler yapılabilir
+    try {
+      // URL'deki özel karakterleri encode ediyoruz
+      const encodedEmail = encodeURIComponent(email.value);
+      const encodedNote = encodeURIComponent(note.value);
+      
+      const response = await axios.post(
+        `http://18.153.153.139:8082/api/users/send-contact-mail/${encodedEmail}/${encodedNote}`
+      );
+
+      if (response.status === 200) {
+        console.log('Mesaj başarıyla gönderildi');
+        // Form alanlarını temizle
+        note.value = '';
+        email.value = '';
+        alert('Mesajınız başarıyla gönderildi!');
+      }
+    } catch (error) {
+      console.error('Bir hata oluştu:', error);
+      alert('Mesaj gönderilirken bir hata oluştu!');
+    }
   } else {
     console.error('Lütfen tüm alanları doldurun');
+    alert('Lütfen tüm alanları doldurun!');
   }
 };
 </script>

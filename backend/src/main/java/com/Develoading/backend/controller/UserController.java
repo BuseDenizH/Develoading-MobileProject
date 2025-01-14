@@ -3,6 +3,7 @@ package com.Develoading.backend.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -31,6 +32,24 @@ public class UserController {
 
     @Autowired
     private JavaMailSender mailSender; // E-posta gönderimi için
+
+    @PostMapping("/send-contact-mail/{email}/{note}")
+    @CrossOrigin(origins = "http://localhost:8100")
+    public ResponseEntity<?> sendContactMail(@PathVariable String email, @PathVariable String note) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("develoadingg@gmail.com");
+            message.setTo("develoadingg@gmail.com");
+            message.setSubject("İletişim Formu: " + email);
+            message.setText(note);
+            
+            mailSender.send(message);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                               .body("Mail gönderirken bir hata oluştu: " + e.getMessage());
+        }
+    }
 
     @PostMapping("/reset-password/{email}")
     @CrossOrigin(origins = "")
