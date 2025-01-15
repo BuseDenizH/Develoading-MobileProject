@@ -117,7 +117,7 @@ const onLogin = async () => {
       await SecureStoragePlugin.set({ key: 'userId', value: user.id.toString() });
 
       console.log('Login successful:', user);
-      alert(`Hoş geldiniz, ${user.name}`);
+      alert(`Hoş geldiniz!`);
 
       // Yönlendirmeden önce focus'u temizle
       clearFocusBeforeNavigation();
