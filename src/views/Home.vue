@@ -25,13 +25,29 @@
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp" @click="shareContent(campaign)" />
-            <ion-icon id="heart" :class="{ 'red': heartStore.hearts.has(campaign.id) }" aria-hidden="true" :icon="heart"
-              @click="toggleHeart(campaign.id)" />
+            <div class="icon-container">
+              <ion-icon
+                  id="share"
+                  aria-hidden="true"
+                  :icon="shareSocialSharp"
+                  @click="shareContent(campaign)"
+              />
+            </div>
+            <div class="icon-container">
+              <ion-icon
+                  id="heart"
+                  :class="{ 'red': heartStore.hearts.has(campaign.id) }"
+                  aria-hidden="true"
+                  :icon="heart"
+                  @click="toggleHeart(campaign.id)"
+              />
+            </div>
           </div>
         </div>
-        <router-link :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
-          class="card-link">
+        <router-link
+            :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
+            class="card-link"
+        >
           {{ campaign.detail }}
         </router-link>
         <hr class="inline">
@@ -53,20 +69,38 @@
       </ion-toolbar>
 
       <div v-for="campaign in campaignsWithDetails" :key="campaign.id" class="container"
-        :class="{ 'expired': campaign.isExpired }">
+           :class="{ 'expired': campaign.isExpired }">
         <div class="images-container">
           <img :src="campaign.image" :alt="campaign.alt">
           <div class="click-icons">
-            <ion-icon id="share" aria-hidden="true" :icon="shareSocialSharp"
-              @click="!campaign.isExpired && shareContent(campaign)" :class="{ 'disabled': campaign.isExpired }" />
-            <ion-icon id="heart" :class="{
-              'red': heartStore.hearts.has(campaign.id),
-              'disabled': campaign.isExpired
-            }" aria-hidden="true" :icon="heart" @click="!campaign.isExpired && toggleHeart(campaign.id)" />
+            <div class="icon-container">
+              <ion-icon
+                  id="share"
+                  aria-hidden="true"
+                  :icon="shareSocialSharp"
+                  @click="!campaign.isExpired && shareContent(campaign)"
+                  :class="{ 'disabled': campaign.isExpired }"
+              />
+            </div>
+            <div class="icon-container">
+              <ion-icon
+                  id="heart"
+                  :class="{
+            'red': heartStore.hearts.has(campaign.id),
+            'disabled': campaign.isExpired
+          }"
+                  aria-hidden="true"
+                  :icon="heart"
+                  @click="!campaign.isExpired && toggleHeart(campaign.id)"
+              />
+            </div>
           </div>
         </div>
-        <router-link v-if="!campaign.isExpired"
-          :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }" class="card-link">
+        <router-link
+            v-if="!campaign.isExpired"
+            :to="{ name: 'DetailsPopPage', params: { type: 'kampanyalar', id: campaign.id } }"
+            class="card-link"
+        >
           {{ campaign.detail }}
         </router-link>
         <span v-else class="card-link expired-text">{{ campaign.detail }}</span>
@@ -520,5 +554,56 @@ ion-icon {
 
 .expired .click-icons ion-icon {
   color: #ccc !important;
+}
+
+.click-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+  z-index: 1;
+}
+
+.icon-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.icon-container:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.1);
+}
+
+.click-icons ion-icon {
+  font-size: 20px;
+  color: #333;
+}
+
+.click-icons ion-icon.red {
+  color: red;
+}
+
+.click-icons .disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
+.icon-container:has(.disabled) {
+  background-color: rgba(200, 200, 200, 0.8);
+  cursor: not-allowed;
+}
+
+.icon-container:has(.disabled):hover {
+  transform: none;
+  background-color: rgba(200, 200, 200, 0.8);
 }
 </style>
