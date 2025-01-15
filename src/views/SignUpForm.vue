@@ -12,7 +12,7 @@
         <!-- Company Name -->
         <ion-row class="ion-justify-content-center">
           <ion-col size="auto">
-            <ion-text color="medium" class="company-name">campagnify</ion-text>
+            <ion-text color="medium" class="company-name">Campaignify</ion-text>
           </ion-col>
         </ion-row>
 
@@ -25,7 +25,7 @@
 
         <ion-row class="ion-justify-content-center">
           <ion-col size="auto">
-            <ion-text color="medium" class="welcome-text">Merhaba! Kampanya uygulamasına hoşgeldiniz.</ion-text>
+            <ion-text color="medium" class="welcome-text">Campaignify Dünyasına Hoş Geldiniz</ion-text>
           </ion-col>
         </ion-row>
 
@@ -140,9 +140,8 @@
           <ion-item lines="none">
             <ion-checkbox slot="start" v-model="agreeTerms"></ion-checkbox>
             <ion-label>
-              I agree to the 
-              <span class="terms" @click="openTermsModal">Terms of Services</span> and 
-              <span class="privacy" @click="openPrivacyModal">Privacy Policy</span>.
+              <span class="terms" @click="openTermsModal">Kullanım Şartları</span> ve
+              <span class="privacy" @click="openPrivacyModal">Gizlilik Politikası</span>'nı okudum ve kabul ediyorum.
             </ion-label>
           </ion-item>
 
